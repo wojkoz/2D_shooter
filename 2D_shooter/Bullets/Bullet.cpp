@@ -9,5 +9,13 @@ Bullet::Bullet()
 	this->shape.setFillColor(sf::Color::Red);
 }
 
+void Bullet::setRadius(float  r)
+{
+	this->radius = r;
+}
+
+
+
+
 
 

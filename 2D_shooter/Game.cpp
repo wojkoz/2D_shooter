@@ -10,8 +10,9 @@ Game::Game()
 		player()
 {
 	window.setFramerateLimit(60);
-	player.setRadius(80.f);  
+	player.setRadius(60.f);  
 	player.setPosition(100.f, 100.f);  
+	player.setOrigin(player.getRadius(), player.getRadius());
 	player.setFillColor(sf::Color::Cyan);
 }
 
@@ -44,7 +45,7 @@ void Game::update() {
 		float deg = atan2(aimDirNorm.y, aimDirNorm.x) * 180 / PI;
 		player.setRotation(deg + 90);
 
-		//Set Final Rotation of Ship
+		//Display Final Rotation of player
 		std::cout << deg << "\n";
 
 		//Player
@@ -85,13 +86,14 @@ void Game::update() {
 
 void Game::render() {
 	window.clear(); 
-	window.draw(player); 
+	 
 
 	//drawing bullets
 	for (size_t i = 0; i < bullets.size(); i++)
 	{
 		window.draw(bullets[i].shape);
 	}
+	window.draw(player);
 
 	window.display(); 
 }
