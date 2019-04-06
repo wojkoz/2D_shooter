@@ -7,6 +7,7 @@
 #include<iostream>
 #include<vector>
 #include "Bullets/Bullet.h"
+#include "Map/Map.h"
 using namespace sf;
 
 class Game
@@ -36,5 +37,6 @@ private:
 
 	Bullet b1;
 	std::vector<Bullet> bullets;
+	Map map;
 };
 

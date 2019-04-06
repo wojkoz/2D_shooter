@@ -1,17 +1,14 @@
 #include "Game.h"
 
 
-
-////LENGTH OF VECTOR: |V| = sqrt(V.x^2 + V.y^2)
-////NORMALIZE VECTOR: U = V / |V|
-
 Game::Game()
 	:	window(sf::VideoMode(WINDOW_HEIGHT, WINDOW_WIDTH),"2D Shooter"),
 		player()
 {
+	//map = new Map();
 	window.setFramerateLimit(60);
 	player.setRadius(60.f);  
-	player.setPosition(100.f, 100.f);  
+	player.setPosition(0.f, 0.f);  
 	player.setOrigin(player.getRadius(), player.getRadius());
 	player.setFillColor(sf::Color::Cyan);
 }
@@ -86,19 +83,26 @@ void Game::update() {
 
 void Game::render() {
 	window.clear(); 
-	 
-
+	//start drawing here
+	 for(int i = 0; i<20;i++)
+		 for (int j = 0; j < 20; j++) {
+			 window.draw(map.shapes[i][j]);
+		 }
+	
 	//drawing bullets
 	for (size_t i = 0; i < bullets.size(); i++)
 	{
 		window.draw(bullets[i].shape);
 	}
+	//drawing player (on bullets start location)
 	window.draw(player);
 
+	//stop drawing here
 	window.display(); 
 }
 
 
 Game::~Game()
 {
+	//delete(map);
 }
