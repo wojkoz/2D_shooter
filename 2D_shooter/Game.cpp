@@ -5,10 +5,10 @@ Game::Game()
 	:	window(sf::VideoMode(WINDOW_HEIGHT, WINDOW_WIDTH),"2D Shooter"),
 		player()
 {
-	//map = new Map();
+	map = new Map();
 	window.setFramerateLimit(60);
-	player.setRadius(60.f);  
-	player.setPosition(0.f, 0.f);  
+	player.setRadius(45.f);  
+	player.setPosition(50.f, 50.f);  
 	player.setOrigin(player.getRadius(), player.getRadius());
 	player.setFillColor(sf::Color::Cyan);
 }
@@ -77,7 +77,9 @@ void Game::update() {
 				
 			}
 		}
-
+		//scroll view
+		viewPlayer.setCenter(playerCenter);
+		viewPlayer.setSize(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
 
 }
 
@@ -86,8 +88,10 @@ void Game::render() {
 	//start drawing here
 	 for(int i = 0; i<20;i++)
 		 for (int j = 0; j < 20; j++) {
-			 window.draw(map.shapes[i][j]);
+			 window.draw(map->shapes[i][j]);
 		 }
+	 //centers view on player
+	 window.setView(viewPlayer);
 	
 	//drawing bullets
 	for (size_t i = 0; i < bullets.size(); i++)
@@ -104,5 +108,5 @@ void Game::render() {
 
 Game::~Game()
 {
-	//delete(map);
+	delete(map);
 }

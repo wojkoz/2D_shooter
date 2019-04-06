@@ -37,6 +37,9 @@ private:
 
 	Bullet b1;
 	std::vector<Bullet> bullets;
-	Map map;
+
+	Map *map;
+
+	sf::View viewPlayer;
 };
 
