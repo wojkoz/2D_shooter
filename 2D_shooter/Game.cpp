@@ -33,17 +33,18 @@ void Game::processEvents() {
 }
 
 void Game::update() {
-	//Vectors
+		sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
+		sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos); //changeing coordinates of mouse in window to world coordinates when windows is resized or player is further than
+																	//window height or width
+		//Vectors
 		playerCenter = Vector2f(player.getPosition());
-		mousePosWindow = Vector2f(Mouse::getPosition(window));
+		mousePosWindow = Vector2f(worldPos);
+		
 		aimDir = mousePosWindow - playerCenter;
 		aimDirNorm = aimDir / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2));
 
 		float deg = atan2(aimDirNorm.y, aimDirNorm.x) * 180 / PI;
 		player.setRotation(deg + 90);
-
-		//Display Final Rotation of player
-		std::cout << deg << "\n";
 
 		//Player
 		if (Keyboard::isKeyPressed(Keyboard::A))
@@ -70,8 +71,8 @@ void Game::update() {
 			bullets[i].shape.move(bullets[i].currVelocity);
 
 			//destroying bullets when out of map border
-			if (bullets[i].shape.getPosition().x < 0 || bullets[i].shape.getPosition().x > window.getSize().x
-				|| bullets[i].shape.getPosition().y < 0 || bullets[i].shape.getPosition().y > window.getSize().y)
+			if (bullets[i].shape.getPosition().x < 0 || bullets[i].shape.getPosition().x > 2000//window.getSize().x
+				|| bullets[i].shape.getPosition().y < 0 || bullets[i].shape.getPosition().y > 2000)//window.getSize().y)
 			{
 				bullets.erase(bullets.begin() + i);
 				
@@ -80,11 +81,11 @@ void Game::update() {
 		//scroll view
 		viewPlayer.setCenter(playerCenter);
 		viewPlayer.setSize(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
-
+		
 }
 
 void Game::render() {
-	window.clear(); 
+	window.clear(sf::Color::Green); 
 	//start drawing here
 	 for(int i = 0; i<20;i++)
 		 for (int j = 0; j < 20; j++) {
