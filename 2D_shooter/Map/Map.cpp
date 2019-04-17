@@ -4,6 +4,9 @@
 
 Map::Map()
 {
+	map = makeArray<sf::Vector2i>(20, 20);
+	shapes = makeArray<sf::RectangleShape>(20, 20);
+
 	sf::Vector2i counter = sf::Vector2i(0, 0);
 	loadMap();
 	makeShapes();
@@ -60,6 +63,8 @@ void Map::makeShapes() {
 		}
 }
 
+
 Map::~Map()
 {
+	
 }
