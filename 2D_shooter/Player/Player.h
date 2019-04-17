@@ -8,7 +8,7 @@ public:
 	Player(std::string name);
 	sf::CircleShape playerShape;
 	std::string getNick();
-	void decreseHp(int a);
+	void decreseHp(int dmg);
 	int getHp();
 private:
 

@@ -19,12 +19,12 @@ std::string Player::getNick()
 	return nick;
 }
 
-void inline Player::decreseHp(int a)
+void Player::decreseHp(int dmg)
 {
-	hp -= a;
+	hp -= dmg;
 }
 
-int inline Player::getHp()
+int Player::getHp()
 {
 	return hp;
 }

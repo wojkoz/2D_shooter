@@ -7,6 +7,16 @@ Game::Game()
 	player = new Player("TheEnter3");
 	map = new Map();
 	window.setFramerateLimit(60);
+							//font for player name
+	if (!font.loadFromFile("Font/PlayerName/data-latin.ttf")) {
+		std::cout << "Error, couldn't find Font/PlayerName/RemachineScript_Personal_Use.ttf"<<std::endl;
+	}
+	else {					//text above player
+		playerNameText.setFont(font);
+		playerNameText.setFillColor(sf::Color::White);
+		playerNameText.setScale(1.5f,1.5f);
+		playerNameText.setString(player->getNick());
+	}
 	
 }
 
@@ -69,17 +79,18 @@ void Game::update() {
 			bullets[i].shape.move(bullets[i].currVelocity);
 
 			//destroying bullets when out of map border
-			if (bullets[i].shape.getPosition().x < 0 || bullets[i].shape.getPosition().x > 2000//window.getSize().x
-				|| bullets[i].shape.getPosition().y < 0 || bullets[i].shape.getPosition().y > 2000)//window.getSize().y)
+			if (bullets[i].shape.getPosition().x < 0 || bullets[i].shape.getPosition().x > map->getMapX()//x
+				|| bullets[i].shape.getPosition().y < 0 || bullets[i].shape.getPosition().y > map->getMapY())//y
 			{
 				bullets.erase(bullets.begin() + i);
-				
 			}
 		}
+		//player nick position
+		playerNameText.setPosition(playerCenter.x - playerNameText.getLocalBounds().width/2, playerCenter.y - player->playerShape.getRadius()*2);
 		
 		//scroll view
 		viewPlayer.setCenter(playerCenter);
-		viewPlayer.setSize(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
+		viewPlayer.setSize(sf::Vector2f((float)WINDOW_WIDTH, (float)WINDOW_HEIGHT));
 		
 }
 
@@ -100,6 +111,7 @@ void Game::render() {
 	}
 	//drawing player (on bullets start location)
 	window.draw(player->playerShape);
+	window.draw(playerNameText);
 
 	//stop drawing here
 	window.display(); 

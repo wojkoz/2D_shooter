@@ -150,6 +150,9 @@
   <ItemGroup>
     <Text Include="Map\Map1.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="Font\PlayerName\data-latin.ttf" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

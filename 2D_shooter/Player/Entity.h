@@ -4,7 +4,7 @@
 class Entity
 {
 public:
-	std::string nick;
 	int hp;
+	std::string nick;
 };
 

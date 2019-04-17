@@ -29,6 +29,8 @@ private:
 	sf::RenderWindow window;		//window
 	//sf::CircleShape player;
 	Player *player;
+	sf::Font font;
+	sf::Text playerNameText;
 
 	const float playerSpeed = 10.f;
 

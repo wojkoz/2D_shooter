@@ -11,14 +11,15 @@ class Map
 public:
 	Map();
 	sf::RectangleShape **shapes;
+	int getMapX();
+	int getMapY();
 	~Map();
 private:
 	void loadMap();
 	void makeShapes();
 
 	template <class T> T** makeArray(int n, int m);	//creates basic array 20x20
-	//void delete_array(double ** array, int n);
-	template <class T> void deleteArray(T array, int n);
+	template <class T> void deleteArray(T array, int n);//destroys array
 
 	std::fstream file;
 	sf::Vector2i **map;
