@@ -5,7 +5,7 @@
 #include<math.h>
 #include<vector>
 #include<iostream>
-#include<vector>
+#include "Player/Player.h"
 #include "Bullets/Bullet.h"
 #include "Map/Map.h"
 using namespace sf;
@@ -27,7 +27,10 @@ private:
 	const float PI = 3.14159265f;
 
 	sf::RenderWindow window;		//window
-	sf::CircleShape player;
+	//sf::CircleShape player;
+	Player *player;
+
+	const float playerSpeed = 10.f;
 
 	//Vectors
 	Vector2f playerCenter;

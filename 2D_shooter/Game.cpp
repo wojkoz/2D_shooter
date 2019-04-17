@@ -2,15 +2,12 @@
 
 
 Game::Game()
-	:	window(sf::VideoMode(WINDOW_HEIGHT, WINDOW_WIDTH),"2D Shooter"),
-		player()
+	:	window(sf::VideoMode(WINDOW_HEIGHT, WINDOW_WIDTH),"2D Shooter")
 {
+	player = new Player("TheEnter3");
 	map = new Map();
 	window.setFramerateLimit(60);
-	player.setRadius(45.f);  
-	player.setPosition(50.f, 50.f);  
-	player.setOrigin(player.getRadius(), player.getRadius());
-	player.setFillColor(sf::Color::Cyan);
+	
 }
 
 void Game::run() { 
@@ -34,27 +31,28 @@ void Game::processEvents() {
 
 void Game::update() {
 		sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
-		sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos); //changeing coordinates of mouse in window to world coordinates when windows is resized or player is further than
+		sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos); //changing coordinates of mouse in window to world coordinates when windows is resized or player is further than
 																	//window height or width
 		//Vectors
-		playerCenter = Vector2f(player.getPosition());
+		playerCenter = Vector2f(player->playerShape.getPosition());
 		mousePosWindow = Vector2f(worldPos);
 		
 		aimDir = mousePosWindow - playerCenter;
 		aimDirNorm = aimDir / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2));
 
 		float deg = atan2(aimDirNorm.y, aimDirNorm.x) * 180 / PI;
-		player.setRotation(deg + 90);
+
+		player->playerShape.setRotation(deg+90);
 
 		//Player
 		if (Keyboard::isKeyPressed(Keyboard::A))
-			player.move(-10.f, 0.f);
+			player->playerShape.move(-playerSpeed, 0.f);
 		if (Keyboard::isKeyPressed(Keyboard::D))
-			player.move(10.f, 0.f);
+			player->playerShape.move(playerSpeed, 0.f);
 		if (Keyboard::isKeyPressed(Keyboard::W))
-			player.move(0.f, -10.f);
+			player->playerShape.move(0.f, -playerSpeed);
 		if (Keyboard::isKeyPressed(Keyboard::S))
-			player.move(0.f, 10.f);
+			player->playerShape.move(0.f, playerSpeed);
 
 
 		//Shooting
@@ -78,6 +76,7 @@ void Game::update() {
 				
 			}
 		}
+		
 		//scroll view
 		viewPlayer.setCenter(playerCenter);
 		viewPlayer.setSize(sf::Vector2f(WINDOW_WIDTH, WINDOW_HEIGHT));
@@ -91,7 +90,7 @@ void Game::render() {
 		 for (int j = 0; j < 20; j++) {
 			 window.draw(map->shapes[i][j]);
 		 }
-	 //centers view on player
+	 //centering view on player
 	 window.setView(viewPlayer);
 	
 	//drawing bullets
@@ -100,7 +99,7 @@ void Game::render() {
 		window.draw(bullets[i].shape);
 	}
 	//drawing player (on bullets start location)
-	window.draw(player);
+	window.draw(player->playerShape);
 
 	//stop drawing here
 	window.display(); 
