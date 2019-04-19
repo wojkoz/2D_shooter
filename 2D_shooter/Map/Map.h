@@ -13,6 +13,8 @@ public:
 	sf::RectangleShape **shapes;
 	int getMapX();
 	int getMapY();
+	int getShapeRows();		//rows
+	int getShapeCols();		//cols
 	~Map();
 private:
 	void loadMap();

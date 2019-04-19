@@ -22,6 +22,16 @@ int Map::getMapY()
 	return counter.y * 100;
 }
 
+int Map::getShapeRows()
+{
+	return counter.y;
+}
+
+int Map::getShapeCols()
+{
+	return counter.x;
+}
+
 void Map::loadMap() {
 	file.open("Map1.txt");		//file with map structure
 	if (file.is_open()) {
@@ -64,7 +74,7 @@ void Map::makeShapes() {
 
 				shapes[i][j] = sf::RectangleShape();
 				shapes[i][j].setPosition(sf::Vector2f(i*100.f, j*100.f));
-
+				//temporary coloring
 				if(j%2==0)
 					shapes[i][j].setFillColor(sf::Color::Green);
 				else

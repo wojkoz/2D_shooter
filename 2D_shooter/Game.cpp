@@ -79,19 +79,18 @@ void Game::update() {
 			bullets[i].shape.move(bullets[i].currVelocity);
 
 			//destroying bullets when out of map border
-			if (bullets[i].shape.getPosition().x < 0 || bullets[i].shape.getPosition().x > map->getMapX()//x
-				|| bullets[i].shape.getPosition().y < 0 || bullets[i].shape.getPosition().y > map->getMapY())//y
+			if (isCollision(bullets[i]))
 			{
 				bullets.erase(bullets.begin() + i);
 			}
 		}
+
 		//player nick position
 		playerNameText.setPosition(playerCenter.x - playerNameText.getLocalBounds().width/2, playerCenter.y - player->getPlayerShape().getRadius()*2);
 		
 		//scroll view
 		viewPlayer.setCenter(playerCenter);
 		viewPlayer.setSize(sf::Vector2f((float)WINDOW_WIDTH, (float)WINDOW_HEIGHT));
-		
 }
 
 void Game::render() {
@@ -105,7 +104,7 @@ void Game::render() {
 	 window.setView(viewPlayer);
 	
 	//drawing bullets
-	for (size_t i = 0; i < bullets.size(); i++)
+	for (auto i = 0; i < bullets.size(); i++)
 	{
 		window.draw(bullets[i].shape);
 	}
@@ -115,6 +114,30 @@ void Game::render() {
 
 	//stop drawing here
 	window.display(); 
+}
+
+bool Game::isCollision(Bullet bullet)
+{
+	if (bullet.shape.getPosition().x < 0 || bullet.shape.getPosition().x > map->getMapX()
+		|| bullet.shape.getPosition().y < 0 || bullet.shape.getPosition().y > map->getMapY()) {
+			return true;
+	}			
+	else {//TODO: poprawic warunek
+		for (int i = 0; i < map->getShapeRows(); i++) {
+			for (int j = 0; j < map->getShapeCols(); j++) {
+				if ((bullet.shape.getPosition().x > map->shapes[i][j].getPosition().x && bullet.shape.getPosition().x < (map->shapes[i][j].getPosition().x * 100)) 
+					||
+					(bullet.shape.getPosition().y > (map->shapes[i][j].getPosition().y * 100) && bullet.shape.getPosition().y < map->shapes[i][j].getPosition().y)) {
+					return true;
+				}
+				else {
+					return false;
+				}
+
+			}
+		}
+		
+	}
 }
 
 

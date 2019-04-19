@@ -22,6 +22,8 @@ private:
 	void	update();				//updateing frames
 	void	render();				//render new frames
 
+	bool isCollision(Bullet bullet);
+
 	const int WINDOW_HEIGHT = 800;			//window size
 	const int WINDOW_WIDTH = 800;
 	const float PI = 3.14159265f;
