@@ -15,7 +15,7 @@ Game::Game()
 		playerNameText.setFont(font);
 		playerNameText.setFillColor(sf::Color::White);
 		playerNameText.setScale(1.5f,1.5f);
-		playerNameText.setString(player->getNick());
+		playerNameText.setString(player->getPlayerNick());
 	}
 	
 }
@@ -44,7 +44,7 @@ void Game::update() {
 		sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos); //changing coordinates of mouse in window to world coordinates when windows is resized or player is further than
 																	//window height or width
 		//Vectors
-		playerCenter = Vector2f(player->playerShape.getPosition());
+		playerCenter = Vector2f(player->getPlayerShape().getPosition());
 		mousePosWindow = Vector2f(worldPos);
 		
 		aimDir = mousePosWindow - playerCenter;
@@ -52,17 +52,17 @@ void Game::update() {
 
 		float deg = atan2(aimDirNorm.y, aimDirNorm.x) * 180 / PI;
 
-		player->playerShape.setRotation(deg+90);
+		player->getPlayerShape().setRotation(deg+90);
 
 		//Player
 		if (Keyboard::isKeyPressed(Keyboard::A))
-			player->playerShape.move(-playerSpeed, 0.f);
+			player->getPlayerShape().move(-playerSpeed, 0.f);
 		if (Keyboard::isKeyPressed(Keyboard::D))
-			player->playerShape.move(playerSpeed, 0.f);
+			player->getPlayerShape().move(playerSpeed, 0.f);
 		if (Keyboard::isKeyPressed(Keyboard::W))
-			player->playerShape.move(0.f, -playerSpeed);
+			player->getPlayerShape().move(0.f, -playerSpeed);
 		if (Keyboard::isKeyPressed(Keyboard::S))
-			player->playerShape.move(0.f, playerSpeed);
+			player->getPlayerShape().move(0.f, playerSpeed);
 
 
 		//Shooting
@@ -86,7 +86,7 @@ void Game::update() {
 			}
 		}
 		//player nick position
-		playerNameText.setPosition(playerCenter.x - playerNameText.getLocalBounds().width/2, playerCenter.y - player->playerShape.getRadius()*2);
+		playerNameText.setPosition(playerCenter.x - playerNameText.getLocalBounds().width/2, playerCenter.y - player->getPlayerShape().getRadius()*2);
 		
 		//scroll view
 		viewPlayer.setCenter(playerCenter);
@@ -110,7 +110,7 @@ void Game::render() {
 		window.draw(bullets[i].shape);
 	}
 	//drawing player (on bullets start location)
-	window.draw(player->playerShape);
+	window.draw(player->getPlayerShape());
 	window.draw(playerNameText);
 
 	//stop drawing here
@@ -121,4 +121,5 @@ void Game::render() {
 Game::~Game()
 {
 	delete(map);
+	delete(player);
 }

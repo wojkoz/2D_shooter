@@ -1,16 +1,15 @@
 #pragma once
-#include <string>
-#include <SFML/Graphics.hpp>
 #include "Entity.h"
-class Player : private Entity
+class Player : private Entity		//nick, hp, playerShape
 {
 public:
 	Player(std::string name);
-	sf::CircleShape playerShape;
-	std::string getNick();
-	void decreseHp(int dmg);
-	int getHp();
-private:
+	sf::CircleShape& getPlayerShape();
 
+	std::string getPlayerNick();
+	void decresePlayerHp(int dmg);
+	int getPlayerHp();
+private:
+	
 };
 

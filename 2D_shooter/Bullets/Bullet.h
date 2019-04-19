@@ -8,7 +8,6 @@ public:
 
 	void setRadius(float r);
 
-
 	sf::Vector2f currVelocity;
 	sf::CircleShape shape;
     float maxSpeed = 15.f;
@@ -16,7 +15,6 @@ public:
 
 private:
 
-	
 	float radius = 5.f;
 
 };
