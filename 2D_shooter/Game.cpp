@@ -132,6 +132,7 @@ bool Game::isCollision(Bullet bullet)
 		}
 		
 	}
+	return false;
 }
 
 
