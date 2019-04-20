@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bullets\Bullet.cpp" />
+    <ClCompile Include="Collisions\Collisions.cpp" />
     <ClCompile Include="Player\Enemy.cpp" />
     <ClCompile Include="Player\Entity.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -142,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bullets\Bullet.h" />
+    <ClInclude Include="Collisions\Collisions.h" />
     <ClInclude Include="Player\Enemy.h" />
     <ClInclude Include="Player\Entity.h" />
     <ClInclude Include="Game.h" />

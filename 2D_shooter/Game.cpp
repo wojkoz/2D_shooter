@@ -122,18 +122,12 @@ bool Game::isCollision(Bullet bullet)
 		|| bullet.shape.getPosition().y < 0 || bullet.shape.getPosition().y > map->getMapY()) {
 			return true;
 	}			
-	else {//TODO: poprawic warunek
+	else {
 		for (int i = 0; i < map->getShapeRows(); i++) {
 			for (int j = 0; j < map->getShapeCols(); j++) {
-				if ((bullet.shape.getPosition().x > map->shapes[i][j].getPosition().x && bullet.shape.getPosition().x < (map->shapes[i][j].getPosition().x * 100)) 
-					||
-					(bullet.shape.getPosition().y > (map->shapes[i][j].getPosition().y * 100) && bullet.shape.getPosition().y < map->shapes[i][j].getPosition().y)) {
+				if (Collision::PixelPerfectTest(bullet, )) {
 					return true;
 				}
-				else {
-					return false;
-				}
-
 			}
 		}
 		

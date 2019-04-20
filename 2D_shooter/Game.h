@@ -8,6 +8,7 @@
 #include "Player/Player.h"
 #include "Bullets/Bullet.h"
 #include "Map/Map.h"
+#include "Collisions/Collisions.h"
 using namespace sf;
 
 class Game
