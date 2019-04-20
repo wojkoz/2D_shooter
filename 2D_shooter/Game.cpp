@@ -8,7 +8,7 @@ Game::Game()
 	map = new Map();
 	window.setFramerateLimit(60);
 							//font for player name
-	if (!font.loadFromFile("Font/PlayerName/data-latin.ttf")) {
+	if (!font.loadFromFile("res/Font/PlayerName/data-latin.ttf")) {
 		std::cout << "Error, couldn't find Font/PlayerName/RemachineScript_Personal_Use.ttf"<<std::endl;
 	}
 	else {					//text above player

@@ -73,7 +73,6 @@
     <Text Include="Map\Map1.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Font Include="Font\PlayerName\data-latin.ttf" />
     <Font Include="res\Font\PlayerName\data-latin.ttf" />
   </ItemGroup>
   <ItemGroup>
