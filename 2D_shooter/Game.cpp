@@ -94,7 +94,7 @@ void Game::update() {
 }
 
 void Game::render() {
-	window.clear(sf::Color::Green); 
+	window.clear(sf::Color::Black); 
 	//start drawing here
 	 for(int i = 0; i<20;i++)
 		 for (int j = 0; j < 20; j++) {
@@ -125,7 +125,7 @@ bool Game::isCollision(Bullet bullet)
 	else {
 		for (int i = 0; i < map->getShapeRows(); i++) {
 			for (int j = 0; j < map->getShapeCols(); j++) {
-				if (Collision::PixelPerfectTest(bullet, )) {
+				if (Collision::PixelPerfectTest(bullet.shape, map->shapes[i][j] )) {
 					return true;
 				}
 			}

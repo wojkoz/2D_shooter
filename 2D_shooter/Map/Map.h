@@ -4,13 +4,14 @@
 #include <cctype>
 #include <string>
 #include <iostream>
+#include "../Collisions/Collision.h"
 //TODO:
 //przerobic loadMap() i makeShapes() ¿eby rozmiar tablic sie zmienia³ + dodaj funkcje do zmieniania rozmiaru dla map
 class Map
 {
 public:
 	Map();
-	sf::RectangleShape **shapes;
+	sf::Sprite **shapes;
 	int getMapX();
 	int getMapY();
 	int getShapeRows();		//rows
@@ -26,6 +27,7 @@ private:
 	std::fstream file;
 	sf::Vector2i **map;
 	sf::Vector2i counter;
+	sf::Texture texture;
 
 	
 };

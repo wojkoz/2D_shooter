@@ -5,7 +5,8 @@
 Map::Map()
 {
 	map = makeArray<sf::Vector2i>(20, 20);
-	shapes = makeArray<sf::RectangleShape>(20, 20);
+	shapes = makeArray<sf::Sprite>(20, 20);
+	Collision::CreateTextureAndBitmask(texture, "res/sprite/background.png");
 
 	sf::Vector2i counter = sf::Vector2i(0, 0);
 	loadMap();
@@ -72,15 +73,11 @@ void Map::makeShapes() {
 		for (int j = 0; j < counter.y; j++) {
 			if (map[i][j].x != -1 && map[i][j].y != -1) {
 
-				shapes[i][j] = sf::RectangleShape();
+				shapes[i][j] = sf::Sprite();
 				shapes[i][j].setPosition(sf::Vector2f(i*100.f, j*100.f));
 				//temporary coloring
-				if(j%2==0)
-					shapes[i][j].setFillColor(sf::Color::Green);
-				else
-					shapes[i][j].setFillColor(sf::Color::Blue);
-
-				shapes[i][j].setSize(sf::Vector2f(100.f, 100.f));				
+				shapes[i][j].scale(0.5f, 0.5f);
+				
 			}
 			
 		}

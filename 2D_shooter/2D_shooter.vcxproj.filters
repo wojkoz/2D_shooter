@@ -39,7 +39,7 @@
     <ClCompile Include="Player\Enemy.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Collisions\Collisions.cpp">
+    <ClCompile Include="Collisions\Collision.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
   </ItemGroup>
@@ -65,7 +65,7 @@
     <ClInclude Include="Player\Enemy.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
-    <ClInclude Include="Collisions\Collisions.h">
+    <ClInclude Include="Collisions\Collision.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
   </ItemGroup>
@@ -74,5 +74,17 @@
   </ItemGroup>
   <ItemGroup>
     <Font Include="Font\PlayerName\data-latin.ttf" />
+    <Font Include="res\Font\PlayerName\data-latin.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\sprite\background.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\sprite\Enemy.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
+    <Image Include="res\sprite\Player.png">
+      <Filter>Pliki zasobów</Filter>
+    </Image>
   </ItemGroup>
 </Project>

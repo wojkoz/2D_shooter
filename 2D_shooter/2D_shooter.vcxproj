@@ -132,7 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bullets\Bullet.cpp" />
-    <ClCompile Include="Collisions\Collisions.cpp" />
+    <ClCompile Include="Collisions\Collision.cpp" />
     <ClCompile Include="Player\Enemy.cpp" />
     <ClCompile Include="Player\Entity.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -143,7 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bullets\Bullet.h" />
-    <ClInclude Include="Collisions\Collisions.h" />
+    <ClInclude Include="Collisions\Collision.h" />
     <ClInclude Include="Player\Enemy.h" />
     <ClInclude Include="Player\Entity.h" />
     <ClInclude Include="Game.h" />
@@ -156,6 +156,12 @@
   </ItemGroup>
   <ItemGroup>
     <Font Include="Font\PlayerName\data-latin.ttf" />
+    <Font Include="res\Font\PlayerName\data-latin.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\sprite\background.png" />
+    <Image Include="res\sprite\Enemy.png" />
+    <Image Include="res\sprite\Player.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
