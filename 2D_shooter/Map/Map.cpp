@@ -76,8 +76,9 @@ void Map::makeShapes() {
 				shapes[i][j] = sf::Sprite();
 				shapes[i][j].setPosition(sf::Vector2f(i*100.f, j*100.f));
 				//temporary coloring
-				shapes[i][j].scale(1.f, 1.f);
+				shapes[i][j].scale(4.f, 4.f);
 				shapes[i][j].setTexture(texture);
+				shapes[i][j].setColor(sf::Color(0,0,255));
 				
 			}
 			

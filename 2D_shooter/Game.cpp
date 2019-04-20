@@ -100,7 +100,7 @@ void Game::update() {
 }
 
 void Game::render() {
-	window.clear(sf::Color::Black); 
+	window.clear(sf::Color(0,153,0)); 
 	//start drawing here
 	 for(int i = 0; i<20;i++)
 		 for (int j = 0; j < 20; j++) {
