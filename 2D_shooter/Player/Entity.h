@@ -6,10 +6,10 @@
 class Entity
 {
 public:
-	Entity();
+	Entity(std::string src_texture);
 	void setHp(int a);
 	void setNick(std::string name);
-	sf::Sprite& getShape();
+	sf::Sprite Shape;
 
 	std::string getNick();
 	void decreseHp(int dmg);
@@ -17,7 +17,7 @@ public:
 private:
 	int hp;
 	std::string nick;
-	sf::Sprite playerShape;
+	
 	sf::Texture texture;
 };
 

@@ -19,15 +19,21 @@ Game::Game()
 	}
 	
 }
+void t(const std::string& s) {
+	std::cout << s << std::endl;
+}
 
 void Game::run() { 
+	
 
 	while(window.isOpen()) 
 	{
-		processEvents(); 
-		update();     
-		render(); 
+		processEvents();		
+		update();
+		render();
+		
 	}
+	
 }
 
 void Game::processEvents() { 
@@ -54,15 +60,15 @@ void Game::update() {
 
 		player->getPlayerShape().setRotation(deg+90);
 
-		//Player
+		//Player movement
 		if (Keyboard::isKeyPressed(Keyboard::A))
-			player->getPlayerShape().move(-playerSpeed, 0.f);
+			checkPlayerCollision(direction::LEFT);
 		if (Keyboard::isKeyPressed(Keyboard::D))
-			player->getPlayerShape().move(playerSpeed, 0.f);
+			checkPlayerCollision(direction::RIGHT);
 		if (Keyboard::isKeyPressed(Keyboard::W))
-			player->getPlayerShape().move(0.f, -playerSpeed);
+			checkPlayerCollision(direction::UP);
 		if (Keyboard::isKeyPressed(Keyboard::S))
-			player->getPlayerShape().move(0.f, playerSpeed);
+			checkPlayerCollision(direction::DOWN);
 
 
 		//Shooting
@@ -86,7 +92,7 @@ void Game::update() {
 		}
 
 		//player nick position
-		playerNameText.setPosition(playerCenter.x - playerNameText.getLocalBounds().width/2, playerCenter.y - player->getPlayerShape().getRadius()*2);
+		playerNameText.setPosition(playerCenter.x - playerNameText.getLocalBounds().width/1.3f, playerCenter.y - player->getPlayerShape().getTexture()->getSize().y/2);
 		
 		//scroll view
 		viewPlayer.setCenter(playerCenter);
@@ -131,6 +137,46 @@ bool Game::isCollision(Bullet bullet)
 			}
 		}
 		
+	}
+	return false;
+}
+
+void Game::checkPlayerCollision(direction d)
+{
+			if (d == direction::LEFT) {
+				if (player->getPlayerShape().getGlobalBounds().left - playerSpeed >= -30 )
+					player->getPlayerShape().move(-playerSpeed, 0.f);
+				if(playerCollision())
+					player->getPlayerShape().move(playerSpeed, 0.f);
+			}
+			if (d == direction::RIGHT) {
+				if (player->getPlayerShape().getGlobalBounds().width + player->getPlayerShape().getGlobalBounds().left + playerSpeed <= map->getMapX() - 55)
+					player->getPlayerShape().move(playerSpeed, 0.f);
+				if (playerCollision())
+					player->getPlayerShape().move(-playerSpeed, 0.f);
+			}
+			if (d == direction::UP) {
+				if (player->getPlayerShape().getGlobalBounds().top - playerSpeed >= -30)
+					player->getPlayerShape().move(0.f, -playerSpeed);
+				if (playerCollision())
+					player->getPlayerShape().move(0.f, playerSpeed);
+			}
+			if (d == direction::DOWN) {
+				if (player->getPlayerShape().getGlobalBounds().height + player->getPlayerShape().getGlobalBounds().top + playerSpeed <= map->getMapY() - 70)
+					player->getPlayerShape().move(0.f, playerSpeed);
+				if (playerCollision())
+					player->getPlayerShape().move(0.f, -playerSpeed);
+			}			
+}
+
+bool Game::playerCollision()
+{
+	for (int i = 0; i < map->getShapeRows(); i++) {
+		for (int j = 0; j < map->getShapeCols(); j++) {
+			if (Collision::PixelPerfectTest(player->getPlayerShape(), map->shapes[i][j])) {
+				return true;
+			}
+		}
 	}
 	return false;
 }

@@ -5,6 +5,7 @@
 #include<math.h>
 #include<vector>
 #include<iostream>
+#include <thread>
 #include "Player/Player.h"
 #include "Bullets/Bullet.h"
 #include "Map/Map.h"
@@ -23,6 +24,11 @@ private:
 	void	update();				//updateing frames
 	void	render();				//render new frames
 
+	enum direction {
+		UP, DOWN, LEFT, RIGHT
+	};
+	direction player_dir;
+
 	bool isCollision(Bullet bullet);
 
 	const int WINDOW_HEIGHT = 800;			//window size
@@ -30,12 +36,14 @@ private:
 	const float PI = 3.14159265f;
 
 	sf::RenderWindow window;		//window
-	//sf::CircleShape player;
+
 	Player *player;
 	sf::Font font;
 	sf::Text playerNameText;
 
 	const float playerSpeed = 10.f;
+	void checkPlayerCollision(direction d);
+	bool playerCollision();
 
 	//Vectors
 	Vector2f playerCenter;

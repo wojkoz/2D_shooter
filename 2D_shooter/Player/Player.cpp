@@ -3,20 +3,20 @@
 
 
 Player::Player(std::string name)
+	: Entity("res/sprite/Player.png")
 {
 	//inherited
 	setNick(name);
 	setHp(100);
 
-	getShape().setRadius(45.f);
-	getShape().setPosition(50.f, 50.f);
-	getShape().setOrigin(getShape().getRadius(), getShape().getRadius());
-	getShape().setFillColor(sf::Color::Cyan);
+	Shape.setScale(0.5f, 0.5f);
+	Shape.setPosition(50.f, 50.f);
+	Shape.setOrigin(sf::Vector2f(Shape.getTexture()->getSize().x / 2, Shape.getTexture()->getSize().y / 2));
 }
 
-sf::CircleShape& Player::getPlayerShape()
+sf::Sprite& Player::getPlayerShape()
 {
-	return getShape();
+	return Shape;
 }
 
 std::string Player::getPlayerNick()

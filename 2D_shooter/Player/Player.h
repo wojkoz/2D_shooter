@@ -4,7 +4,7 @@ class Player : private Entity		//nick, hp, playerShape
 {
 public:
 	Player(std::string name);
-	sf::CircleShape& getPlayerShape();
+	sf::Sprite& getPlayerShape();
 
 	std::string getPlayerNick();
 	void decresePlayerHp(int dmg);

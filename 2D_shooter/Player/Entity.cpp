@@ -1,9 +1,9 @@
 #include "Entity.h"
 
-Entity::Entity()
+Entity::Entity(std::string src_texture)
 {
-	Collision::CreateTextureAndBitmask(texture, "res/sprite/Enemy.png");
-	playerShape.setTexture(texture);
+	Collision::CreateTextureAndBitmask(texture, src_texture);
+	Shape.setTexture(texture);
 }
 
 void Entity::setHp(int a)
@@ -14,11 +14,6 @@ void Entity::setHp(int a)
 void Entity::setNick(std::string name)
 {
 	nick = name;
-}
-
-sf::Sprite & Entity::getShape()
-{
-	return playerShape;
 }
 
 std::string Entity::getNick()

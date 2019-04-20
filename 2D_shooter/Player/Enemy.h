@@ -7,7 +7,7 @@ class Enemy : private Entity
 public:
 	Enemy(std::string name);
 	~Enemy();
-	sf::CircleShape& getEnemyShape();
+	sf::Sprite& getEnemyShape();
 
 	std::string getEnemyNick();
 	void decreseEnemyHp(int dmg);

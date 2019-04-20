@@ -3,19 +3,19 @@
 
 
 Enemy::Enemy(std::string name)
+	: Entity("res/sprite/Enemy.png")
 {
 	setNick(name);
 	setHp(100);
 
-	getShape().setRadius(45.f);
-	getShape().setPosition(50.f, 50.f);
-	getShape().setOrigin(getShape().getRadius(), getShape().getRadius());
-	getShape().setFillColor(sf::Color::Red);
+	Shape.setScale(0.5f, 0.5f);
+	Shape.setPosition(50.f, 50.f);
+	Shape.setOrigin(Shape.getTexture()->getSize().x/2, Shape.getTexture()->getSize().y/2);
 }
 
-sf::CircleShape& Enemy::getEnemyShape()
+sf::Sprite& Enemy::getEnemyShape()
 {
-	return getShape();
+	return Shape;
 }
 
 std::string Enemy::getEnemyNick()
