@@ -17,21 +17,30 @@ Game::Game()
 		playerNameText.setScale(1.5f,1.5f);
 		playerNameText.setString(player->getPlayerNick());
 	}
-	
-}
-void t(const std::string& s) {
-	std::cout << s << std::endl;
+	//network
+	unsigned short x;
+	std::string s;
+	std::cin >> x;
+	std::cin >> s;
+	network = new Network(x, s);
+	enemy = new Enemy("enemy");
+	enemy->getEnemyShape().setPosition(sf::Vector2f(0,0));
 }
 
 void Game::run() { 
-	
+	packet << 2.f;
+	packet << 3.f;
+	network->sendPacket(packet);
+	packet.clear();
 
 	while(window.isOpen()) 
 	{
-		processEvents();		
-		update();
-		render();
-		
+		processEvents();
+		std::future<void> r(std::async(&Game::update, this));
+		//update();
+		r.get();
+		//std::future<void> g(std::async(&Game::render, this));
+		render();		
 	}
 	
 }
@@ -43,60 +52,79 @@ void Game::processEvents() {
 		if (event.type == sf::Event::Closed) 
 			window.close(); 
 	} 
+
 }
 
 void Game::update() {
-		sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
-		sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos); //changing coordinates of mouse in window to world coordinates when windows is resized or player is further than
-																	//window height or width
-		//Vectors
-		playerCenter = Vector2f(player->getPlayerShape().getPosition());
-		mousePosWindow = Vector2f(worldPos);
+	//network recevie packet
+	std::future<void> rp(std::async(&Game::asyncReceivePacket, this));
+	rp.get();
+	sf::Vector2f a;//do usuaniecia TEST
+	packet >> a.x >> a.y;
+	a.x += 50;
+	a.y += 50;
+	enemy->getEnemyShape().setPosition(a);//TEST
+	
+	sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
+	sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos); //changing coordinates of mouse in window to world coordinates when windows is resized or player is further than
+																//window height or width
+	//Vectors
+	playerCenter = Vector2f(player->getPlayerShape().getPosition());
+	mousePosWindow = Vector2f(worldPos);
+	
+	aimDir = mousePosWindow - playerCenter;
+	aimDirNorm = aimDir / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2));
+	float deg = atan2(aimDirNorm.y, aimDirNorm.x) * 180 / PI;
+	player->getPlayerShape().setRotation(deg+90);
+
+	//Player movement
+
+	std::future<void> pm(std::async(&Game::asyncPlayerMovement,this));
+
+	
+	
+	//Shooting
+	if (Mouse::isButtonPressed(Mouse::Left))
+	{
+		b1.shape.setPosition(playerCenter);
+		b1.currVelocity = aimDirNorm * b1.maxSpeed;
+		bullets.push_back(Bullet(b1));
+	}
+
+	//async call checiking bullets collision
+	std::future<void> result(std::async(&Game::asyncCollision,this));
+
+	//player nick position
+	playerNameText.setPosition(playerCenter.x - playerNameText.getLocalBounds().width/1.3f, playerCenter.y - player->getPlayerShape().getTexture()->getSize().y/2);
 		
-		aimDir = mousePosWindow - playerCenter;
-		aimDirNorm = aimDir / sqrt(pow(aimDir.x, 2) + pow(aimDir.y, 2));
+	//scroll view
+	viewPlayer.setCenter(playerCenter);
+	viewPlayer.setSize(sf::Vector2f((float)WINDOW_WIDTH, (float)WINDOW_HEIGHT));
+	
+	//bullets collision result
+	result.get();
+	pm.get();
 
-		float deg = atan2(aimDirNorm.y, aimDirNorm.x) * 180 / PI;
+	//network send packet
+	//packet << player->getPlayerNick() << player->getPlayerShape().getPosition();
+	packet << player->getPlayerShape().getPosition().x;
+	packet << player->getPlayerShape().getPosition().y;
+	//network->sendPacket(packet);
+	std::future<void> t1(std::async(&Game::AsyncPacketSend, this));
+	t1.get();
+	
+}
 
-		player->getPlayerShape().setRotation(deg+90);
-
-		//Player movement
-		if (Keyboard::isKeyPressed(Keyboard::A))
-			checkPlayerCollision(direction::LEFT);
-		if (Keyboard::isKeyPressed(Keyboard::D))
-			checkPlayerCollision(direction::RIGHT);
-		if (Keyboard::isKeyPressed(Keyboard::W))
-			checkPlayerCollision(direction::UP);
-		if (Keyboard::isKeyPressed(Keyboard::S))
-			checkPlayerCollision(direction::DOWN);
-
-
-		//Shooting
-		if (Mouse::isButtonPressed(Mouse::Left))
-		{
-			b1.shape.setPosition(playerCenter);
-			b1.currVelocity = aimDirNorm * b1.maxSpeed;
-
-			bullets.push_back(Bullet(b1));
-		}
-
-		for (size_t i = 0; i < bullets.size(); i++)
-		{
-			bullets[i].shape.move(bullets[i].currVelocity);
-
-			//destroying bullets when out of map border
-			if (isCollision(bullets[i]))
-			{
-				bullets.erase(bullets.begin() + i);
-			}
-		}
-
-		//player nick position
-		playerNameText.setPosition(playerCenter.x - playerNameText.getLocalBounds().width/1.3f, playerCenter.y - player->getPlayerShape().getTexture()->getSize().y/2);
-		
-		//scroll view
-		viewPlayer.setCenter(playerCenter);
-		viewPlayer.setSize(sf::Vector2f((float)WINDOW_WIDTH, (float)WINDOW_HEIGHT));
+void Game::asyncPlayerMovement()
+{
+	if (Keyboard::isKeyPressed(Keyboard::A))
+		checkPlayerCollision(direction::LEFT);
+	if (Keyboard::isKeyPressed(Keyboard::D))
+		checkPlayerCollision(direction::RIGHT);
+	if (Keyboard::isKeyPressed(Keyboard::W))
+		checkPlayerCollision(direction::UP);
+	if (Keyboard::isKeyPressed(Keyboard::S))
+		checkPlayerCollision(direction::DOWN);
 }
 
 void Game::render() {
@@ -110,16 +138,32 @@ void Game::render() {
 	 window.setView(viewPlayer);
 	
 	//drawing bullets
-	for (auto i = 0; i < bullets.size(); i++)
-	{
-		window.draw(bullets[i].shape);
-	}
-	//drawing player (on bullets start location)
+	 for (auto i = 0; i < bullets.size(); i++)
+	 {
+		 window.draw(bullets[i].shape);
+	 }
+
+	//drawing enemy, player
+	window.draw(enemy->getEnemyShape());
 	window.draw(player->getPlayerShape());
 	window.draw(playerNameText);
 
 	//stop drawing here
 	window.display(); 
+}
+
+void Game::asyncCollision() {
+	for (size_t i = 0; i < bullets.size(); i++)
+	{
+		bullets[i].shape.move(bullets[i].currVelocity);
+
+		//destroying bullets when out of map border or hit object with collision
+		//std::future<bool> result(std::async(&Game::isCollision, bullets[i]));
+		if (isCollision(bullets[i]))
+		{
+			bullets.erase(bullets.begin() + i);
+		}
+	}
 }
 
 bool Game::isCollision(Bullet bullet)
@@ -181,9 +225,28 @@ bool Game::playerCollision()
 	return false;
 }
 
+void Game::AsyncPacketSend() {
+	network->sendPacket(packet);
+}
+
+void Game::asyncReceivePacket()
+{
+	network->receivePacket(packet);//unzip packet
+}
 
 Game::~Game()
 {
 	delete(map);
 	delete(player);
+	delete(network);
+}
+
+
+//overloading Packet class
+sf::Packet& operator<<(sf::Packet& packet, const sf::Vector2f& vector) {
+	return packet << vector.x << vector.y;
+}
+
+sf::Packet& operator>>(sf::Packet& packet, sf::Vector2f& vector) {
+	return packet >> vector.x >> vector.y;
 }

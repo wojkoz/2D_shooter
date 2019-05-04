@@ -6,8 +6,9 @@
 class Network
 {
 public:
-	sf::Packet packet;
-	void send();
+
+	void receivePacket(sf::Packet &packet);
+	void sendPacket(sf::Packet &p);
 	Network(unsigned short serverPort, std::string &ipAddress);
 	~Network();
 private:

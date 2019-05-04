@@ -7,9 +7,13 @@
 #include<iostream>
 #include <thread>
 #include "Player/Player.h"
+#include "Player/Enemy.h"
 #include "Bullets/Bullet.h"
 #include "Map/Map.h"
 #include "Collisions/Collision.h"
+#include "Network/Network.h"
+#include <future>
+
 using namespace sf;
 
 class Game
@@ -22,6 +26,7 @@ public:
 private:
 	void	processEvents();		//processing user input
 	void	update();				//updateing frames
+	void asyncPlayerMovement();
 	void	render();				//render new frames
 
 	enum direction {
@@ -41,9 +46,12 @@ private:
 	sf::Font font;
 	sf::Text playerNameText;
 
+	Enemy * enemy;
+	//Colissions
 	const float playerSpeed = 10.f;
 	void checkPlayerCollision(direction d);
 	bool playerCollision();
+	void asyncCollision();
 
 	//Vectors
 	Vector2f playerCenter;
@@ -57,5 +65,11 @@ private:
 	Map *map;
 
 	sf::View viewPlayer;
+
+	//network
+	Network *network;
+	sf::Packet packet;
+	void AsyncPacketSend();
+	void asyncReceivePacket();
 };
 
