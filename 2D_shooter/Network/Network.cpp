@@ -4,9 +4,6 @@
 void Network::receivePacket(sf::Packet &packet)
 {
 	socket.receive(packet, ip, port);
-	float x,y;
-	packet >> x >> y;
-	std::cout << x << "\t" << y << std::endl;
 }
 
 void Network::sendPacket(sf::Packet & p)

@@ -26,9 +26,10 @@ public:
 private:
 	void	processEvents();		//processing user input
 	void	update();				//updateing frames
-	void asyncPlayerMovement();
 	void	render();				//render new frames
 
+	void asyncPlayerMovement();
+	bool updateS = true;
 	enum direction {
 		UP, DOWN, LEFT, RIGHT
 	};

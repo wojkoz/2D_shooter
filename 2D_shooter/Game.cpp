@@ -25,13 +25,14 @@ Game::Game()
 	network = new Network(x, s);
 	enemy = new Enemy("enemy");
 	enemy->getEnemyShape().setPosition(sf::Vector2f(0,0));
+
+	packet << 2.f << 3.f;
+	network->sendPacket(packet);
+	packet.clear();
 }
 
 void Game::run() { 
-	packet << 2.f;
-	packet << 3.f;
-	network->sendPacket(packet);
-	packet.clear();
+
 
 	while(window.isOpen()) 
 	{
@@ -39,7 +40,6 @@ void Game::run() {
 		std::future<void> r(std::async(&Game::update, this));
 		//update();
 		r.get();
-		//std::future<void> g(std::async(&Game::render, this));
 		render();		
 	}
 	
@@ -49,8 +49,8 @@ void Game::processEvents() {
 	sf::Event event; 
 	while(window.pollEvent(event)) 
 	{ 
-		if (event.type == sf::Event::Closed) 
-			window.close(); 
+		if (event.type == sf::Event::Closed)
+			window.close();		
 	} 
 
 }
@@ -58,12 +58,15 @@ void Game::processEvents() {
 void Game::update() {
 	//network recevie packet
 	std::future<void> rp(std::async(&Game::asyncReceivePacket, this));
+
 	rp.get();
 	sf::Vector2f a;//do usuaniecia TEST
 	packet >> a.x >> a.y;
-	a.x += 50;
-	a.y += 50;
-	enemy->getEnemyShape().setPosition(a);//TEST
+	if (a.x != NAN || a.x != -NAN) {
+		std::cout << a.x << "\t" << a.y << std::endl;
+		enemy->getEnemyShape().setPosition(a);//TEST
+	}
+
 	
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
 	sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos); //changing coordinates of mouse in window to world coordinates when windows is resized or player is further than
@@ -78,8 +81,11 @@ void Game::update() {
 	player->getPlayerShape().setRotation(deg+90);
 
 	//Player movement
-
-	std::future<void> pm(std::async(&Game::asyncPlayerMovement,this));
+	if (updateS) {
+		std::future<void> pm(std::async(&Game::asyncPlayerMovement, this));
+		pm.get();
+	}
+	
 
 	
 	
@@ -103,12 +109,12 @@ void Game::update() {
 	
 	//bullets collision result
 	result.get();
-	pm.get();
+
 
 	//network send packet
 	//packet << player->getPlayerNick() << player->getPlayerShape().getPosition();
-	packet << player->getPlayerShape().getPosition().x;
-	packet << player->getPlayerShape().getPosition().y;
+	packet.clear();
+	packet << player->getPlayerShape().getPosition();
 	//network->sendPacket(packet);
 	std::future<void> t1(std::async(&Game::AsyncPacketSend, this));
 	t1.get();
