@@ -38,7 +38,6 @@ void Game::run() {
 	{
 		processEvents();
 		std::future<void> r(std::async(&Game::update, this));
-		//update();
 		r.get();
 		render();		
 	}
@@ -81,10 +80,9 @@ void Game::update() {
 	player->getPlayerShape().setRotation(deg+90);
 
 	//Player movement
-	if (updateS) {
-		std::future<void> pm(std::async(&Game::asyncPlayerMovement, this));
-		pm.get();
-	}
+	std::future<void> pm(std::async(&Game::asyncPlayerMovement, this));
+	pm.get();
+
 	
 
 	
@@ -110,11 +108,10 @@ void Game::update() {
 	//bullets collision result
 	result.get();
 
-
+	packet.clear();
 	//network send packet
 	//packet << player->getPlayerNick() << player->getPlayerShape().getPosition();
-	packet.clear();
-	packet << player->getPlayerShape().getPosition();
+	packet << player->getPlayerShape().getPosition().x << player->getPlayerShape().getPosition().y;
 	//network->sendPacket(packet);
 	std::future<void> t1(std::async(&Game::AsyncPacketSend, this));
 	t1.get();
@@ -248,11 +245,3 @@ Game::~Game()
 }
 
 
-//overloading Packet class
-sf::Packet& operator<<(sf::Packet& packet, const sf::Vector2f& vector) {
-	return packet << vector.x << vector.y;
-}
-
-sf::Packet& operator>>(sf::Packet& packet, sf::Vector2f& vector) {
-	return packet >> vector.x >> vector.y;
-}
