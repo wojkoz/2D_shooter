@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="Bullets\Bullet.cpp" />
     <ClCompile Include="Collisions\Collision.cpp" />
+    <ClCompile Include="Network\PacketType.cpp" />
     <ClCompile Include="Player\Enemy.cpp" />
     <ClCompile Include="Player\Entity.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -144,6 +145,7 @@
   <ItemGroup>
     <ClInclude Include="Bullets\Bullet.h" />
     <ClInclude Include="Collisions\Collision.h" />
+    <ClInclude Include="Network\PacketType.h" />
     <ClInclude Include="Player\Enemy.h" />
     <ClInclude Include="Player\Entity.h" />
     <ClInclude Include="Game.h" />

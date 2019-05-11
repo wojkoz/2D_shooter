@@ -4,7 +4,9 @@
 Game::Game()
 	:	window(sf::VideoMode(WINDOW_HEIGHT, WINDOW_WIDTH),"2D Shooter")
 {
-	player = new Player("TheEnter3");
+	std::string n;
+	std::cin >> n;
+	player = new Player(n);
 	map = new Map();
 	window.setFramerateLimit(60);
 							//font for player name
@@ -18,15 +20,17 @@ Game::Game()
 		playerNameText.setString(player->getPlayerNick());
 	}
 	//network
+	// doac GUI i pobierac IP, port, nick
 	unsigned short x;
 	std::string s;
 	std::cin >> x;
 	std::cin >> s;
 	network = new Network(x, s);
-	enemy = new Enemy("enemy");
-	enemy->getEnemyShape().setPosition(sf::Vector2f(0,0));
+	//enemy = new Enemy("enemy");
+	//enemy->getEnemyShape().setPosition(sf::Vector2f(0,0));
 
-	packet << 2.f << 3.f;
+	makePacketType(PacketType::Connect, packet);	//sending information that client is connecting to server
+
 	network->sendPacket(packet);
 	packet.clear();
 }
@@ -41,6 +45,11 @@ void Game::run() {
 		r.get();
 		render();		
 	}
+
+	packet.clear();
+	makePacketType(PacketType::Disconnect, packet);
+	packet << player->getPlayerNick();
+	network->sendPacket(packet);
 	
 }
 
@@ -59,13 +68,9 @@ void Game::update() {
 	std::future<void> rp(std::async(&Game::asyncReceivePacket, this));
 
 	rp.get();
-	sf::Vector2f a;//do usuaniecia TEST
-	packet >> a.x >> a.y;
-	if (a.x != NAN || a.x != -NAN) {
-		std::cout << a.x << "\t" << a.y << std::endl;
-		enemy->getEnemyShape().setPosition(a);//TEST
-	}
 
+	std::future<void> cpt(std::async(&Game::checkPacketType, this));
+	//checkPacketType();
 	
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
 	sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos); //changing coordinates of mouse in window to world coordinates when windows is resized or player is further than
@@ -83,9 +88,6 @@ void Game::update() {
 	std::future<void> pm(std::async(&Game::asyncPlayerMovement, this));
 	pm.get();
 
-	
-
-	
 	
 	//Shooting
 	if (Mouse::isButtonPressed(Mouse::Left))
@@ -106,13 +108,14 @@ void Game::update() {
 	viewPlayer.setSize(sf::Vector2f((float)WINDOW_WIDTH, (float)WINDOW_HEIGHT));
 	
 	//bullets collision result
+	cpt.get();
 	result.get();
 
-	packet.clear();
 	//network send packet
-	//packet << player->getPlayerNick() << player->getPlayerShape().getPosition();
-	packet << player->getPlayerShape().getPosition().x << player->getPlayerShape().getPosition().y;
-	//network->sendPacket(packet);
+	makePacketType(PacketType::Player_Update, packet);		//function from PacketType.h
+	std::cout<<"\nSENDING\n"<< int(PacketType::Player_Update) <<player->getPlayerNick() << player->getPlayerShape().getPosition().x << player->getPlayerShape().getPosition().y;
+	packet << player->getPlayerNick() << player->getPlayerShape().getPosition().x << player->getPlayerShape().getPosition().y;
+
 	std::future<void> t1(std::async(&Game::AsyncPacketSend, this));
 	t1.get();
 	
@@ -147,7 +150,9 @@ void Game::render() {
 	 }
 
 	//drawing enemy, player
-	window.draw(enemy->getEnemyShape());
+	 for (int i = 0; i < enemy.size(); i++) {
+		 window.draw(enemy.at(i).getEnemyShape());
+	}
 	window.draw(player->getPlayerShape());
 	window.draw(playerNameText);
 
@@ -234,7 +239,52 @@ void Game::AsyncPacketSend() {
 
 void Game::asyncReceivePacket()
 {
-	network->receivePacket(packet);//unzip packet
+	network->receivePacket(packet);
+}
+
+void Game::checkPacketType()
+{
+	sf::Int8 pType;
+	std::string name;
+	packet >> pType >> name;
+	std::cout << "\npType:\t"<<int(pType);
+
+	if ((PacketType)pType == PacketType::Player_Update) {
+		//do usuaniecia TEST
+		packet >> pType >> name >> a.x >> a.y;
+		if (a.x != NAN || a.x != -NAN) {
+			std::cout << a.x << "\t" << a.y << std::endl;
+			for (int i = 0; i < enemy.size(); i++) {
+				if (enemy.at(i).getEnemyNick() == name) {
+					enemy.at(i).getEnemyShape().setPosition(a);
+					break;
+				}
+					
+			}
+		}
+	}
+	else {
+		if ((PacketType)pType == PacketType::Connect) {
+
+			enemy.push_back(Enemy(name));
+			std::cout << "NOWY PRZECIWNIK";
+		}
+		else {
+			for (int i = 0; i < enemy.size(); i++) {
+				if (enemy.at(i).getEnemyNick() == name) {
+					enemy.erase(enemy.begin() + i);
+					break;
+				}
+
+			}
+
+		}
+	}
+	
+	
+
+
+	packet.clear();
 }
 
 Game::~Game()

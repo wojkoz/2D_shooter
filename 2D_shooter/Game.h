@@ -12,6 +12,7 @@
 #include "Map/Map.h"
 #include "Collisions/Collision.h"
 #include "Network/Network.h"
+#include "Network/PacketType.h"
 #include <future>
 
 using namespace sf;
@@ -43,11 +44,14 @@ private:
 
 	sf::RenderWindow window;		//window
 
+	//player & enemy
 	Player *player;
 	sf::Font font;
 	sf::Text playerNameText;
 
-	Enemy * enemy;
+	//Enemy * enemy;
+	std::vector<Enemy> enemy;
+
 	//Colissions
 	const float playerSpeed = 10.f;
 	void checkPlayerCollision(direction d);
@@ -72,5 +76,10 @@ private:
 	sf::Packet packet;
 	void AsyncPacketSend();
 	void asyncReceivePacket();
+	void checkPacketType();
+
+
+
+	sf::Vector2f a;
 };
 
