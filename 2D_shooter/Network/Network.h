@@ -11,6 +11,7 @@ public:
 	void sendPacket(sf::Packet &p);
 	Network(unsigned short serverPort, std::string &ipAddress);
 
+
 	~Network();
 private:
 	sf::UdpSocket socket;

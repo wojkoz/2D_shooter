@@ -23,6 +23,7 @@ Network::Network(unsigned short serverPort, std::string &ipAddress)
 }
 
 
+
 Network::~Network()
 {
 }

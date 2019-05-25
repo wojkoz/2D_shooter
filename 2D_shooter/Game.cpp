@@ -4,10 +4,14 @@
 Game::Game()
 	:	window(sf::VideoMode(WINDOW_HEIGHT, WINDOW_WIDTH),"2D Shooter")
 {
-	std::string n;
-	std::cin >> n;
-	player = new Player(n);
+	srand(unsigned int(time(nullptr)));
+
 	map = new Map();
+	//player nick
+	player = new Player("TheEnter3");
+	//respawnEntity(&player->getPlayerShape(), 'p');
+	player->getPlayerShape().setPosition(2.0f, 2.0f);
+
 	window.setFramerateLimit(60);
 							//font for player name
 	if (!font.loadFromFile("res/Font/PlayerName/data-latin.ttf")) {
@@ -18,21 +22,24 @@ Game::Game()
 		playerNameText.setFillColor(sf::Color::White);
 		playerNameText.setScale(1.5f,1.5f);
 		playerNameText.setString(player->getPlayerNick());
+
+		//killCounter text
+		killCounterText.setFont(font);
+		killCounterText.setFillColor(sf::Color::White);
+		killCounterText.setScale(1.5f, 1.5f);
 	}
+
+	killCounter = 0;
 	//network
-	// doac GUI i pobierac IP, port, nick
-	unsigned short x;
-	std::string s;
-	std::cin >> x;
-	std::cin >> s;
-	network = new Network(x, s);
-	//enemy = new Enemy("enemy");
+	// dodac GUI i pobierac IP, port, nick
+
+	//network = new Network(x, s);
 	//enemy->getEnemyShape().setPosition(sf::Vector2f(0,0));
 
-	makePacketType(PacketType::Connect, packet);	//sending information that client is connecting to server
-
-	network->sendPacket(packet);
-	packet.clear();
+	//packetType.makePacketType(packetType.Connect, packet);	//sending information that client is connecting to server
+	//packet << n << 0 << 0;		//name
+	//network->sendPacket(packet);
+	//packet.clear();
 }
 
 void Game::run() { 
@@ -46,10 +53,10 @@ void Game::run() {
 		render();		
 	}
 
-	packet.clear();
-	makePacketType(PacketType::Disconnect, packet);
-	packet << player->getPlayerNick();
-	network->sendPacket(packet);
+	//packet.clear();
+	//packetType.makePacketType(packetType.Disconnect, packet);
+	//packet << player->getPlayerNick();
+	//network->sendPacket(packet);
 	
 }
 
@@ -65,12 +72,15 @@ void Game::processEvents() {
 
 void Game::update() {
 	//network recevie packet
-	std::future<void> rp(std::async(&Game::asyncReceivePacket, this));
+	//std::future<void> rp(std::async(&Game::asyncReceivePacket, this));
 
-	rp.get();
+	
 
-	std::future<void> cpt(std::async(&Game::checkPacketType, this));
+	//std::future<void> cpt(std::async(&Game::checkPacketType, this));
 	//checkPacketType();
+	
+	//Enemy
+	checkAmountOfEnemy();
 	
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
 	sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos); //changing coordinates of mouse in window to world coordinates when windows is resized or player is further than
@@ -90,7 +100,7 @@ void Game::update() {
 
 	
 	//Shooting
-	if (Mouse::isButtonPressed(Mouse::Left))
+	if (Mouse::isButtonPressed(Mouse::Left) && bullets.size() < MAX_BULLET_COUNT)
 	{
 		b1.shape.setPosition(playerCenter);
 		b1.currVelocity = aimDirNorm * b1.maxSpeed;
@@ -98,7 +108,7 @@ void Game::update() {
 	}
 
 	//async call checiking bullets collision
-	std::future<void> result(std::async(&Game::asyncCollision,this));
+	std::future<void> bulletColl(std::async(&Game::asyncCollision,this));
 
 	//player nick position
 	playerNameText.setPosition(playerCenter.x - playerNameText.getLocalBounds().width/1.3f, playerCenter.y - player->getPlayerShape().getTexture()->getSize().y/2);
@@ -108,17 +118,19 @@ void Game::update() {
 	viewPlayer.setSize(sf::Vector2f((float)WINDOW_WIDTH, (float)WINDOW_HEIGHT));
 	
 	//bullets collision result
-	cpt.get();
-	result.get();
+	//rp.get();
+	//cpt.get();
+	bulletColl.get();
 
 	//network send packet
-	makePacketType(PacketType::Player_Update, packet);		//function from PacketType.h
-	std::cout<<"\nSENDING\n"<< int(PacketType::Player_Update) <<player->getPlayerNick() << player->getPlayerShape().getPosition().x << player->getPlayerShape().getPosition().y;
-	packet << player->getPlayerNick() << player->getPlayerShape().getPosition().x << player->getPlayerShape().getPosition().y;
+	//packetType.makePacketType(packetType.Player_Update, packet);		//function from PacketType.h
 
-	std::future<void> t1(std::async(&Game::AsyncPacketSend, this));
-	t1.get();
+	//std::future<void> t1(std::async(&Game::AsyncPacketSend, this));
+	//t1.get();
 	
+	//killCounter text and position
+	killCounterText.setString(std::to_string(killCounter));
+	killCounterText.setPosition(playerCenter.x + (WINDOW_WIDTH/3 ), playerCenter.y + (WINDOW_HEIGHT/3));
 }
 
 void Game::asyncPlayerMovement()
@@ -151,10 +163,11 @@ void Game::render() {
 
 	//drawing enemy, player
 	 for (int i = 0; i < enemy.size(); i++) {
-		 window.draw(enemy.at(i).getEnemyShape());
+		 window.draw(enemy.at(i)->getEnemyShape());
 	}
 	window.draw(player->getPlayerShape());
 	window.draw(playerNameText);
+	window.draw(killCounterText);
 
 	//stop drawing here
 	window.display(); 
@@ -166,7 +179,6 @@ void Game::asyncCollision() {
 		bullets[i].shape.move(bullets[i].currVelocity);
 
 		//destroying bullets when out of map border or hit object with collision
-		//std::future<bool> result(std::async(&Game::isCollision, bullets[i]));
 		if (isCollision(bullets[i]))
 		{
 			bullets.erase(bullets.begin() + i);
@@ -174,17 +186,40 @@ void Game::asyncCollision() {
 	}
 }
 
+bool Game::enemyPlayerCollision()
+{
+	for (int i = 0; i < enemy.size() ; i++) {
+
+		if (Collision::PixelPerfectTest(player->getPlayerShape(), enemy.at(i)->getEnemyShape())) {
+			//player death
+			killCounter = 0;
+			respawnEntity(&player->getPlayerShape(), 'p');
+			return true;
+		}
+	}
+	return false;
+}
+
 bool Game::isCollision(Bullet bullet)
 {
+	//map border collision
 	if (bullet.shape.getPosition().x < 0 || bullet.shape.getPosition().x > map->getMapX()
 		|| bullet.shape.getPosition().y < 0 || bullet.shape.getPosition().y > map->getMapY()) {
 			return true;
 	}			
-	else {
+	else {//map collision
 		for (int i = 0; i < map->getShapeRows(); i++) {
 			for (int j = 0; j < map->getShapeCols(); j++) {
 				if (Collision::PixelPerfectTest(bullet.shape, map->shapes[i][j] )) {
 					return true;
+				}
+				else {//enemy collision with bullets
+					for(int k = 0; k<enemy.size(); k++)
+						if (Collision::PixelPerfectTest(bullet.shape, enemy.at(k)->getEnemyShape())) {
+							killCounter++;
+							enemy.erase(enemy.begin() + k);
+							return true;
+						}
 				}
 			}
 		}
@@ -193,39 +228,75 @@ bool Game::isCollision(Bullet bullet)
 	return false;
 }
 
+void Game::checkAmountOfEnemy()
+{
+	if (enemy.size() < MIN_ENEMY_ON_MAP) {
+		for (auto i = 0; i < (MAX_ENEMY_ON_MAP - MIN_ENEMY_ON_MAP); i++)
+			addEnemy();
+	}
+}
+
+void Game::addEnemy()
+{
+	enemy.push_back(new Enemy("1"));
+	respawnEntity(&enemy.back()->getEnemyShape(), 'e');
+}
+
+void Game::respawnEntity(sf::Sprite * s, char entity)//p player, e enemy
+{
+	while (true) {
+		s->setPosition(getSpawnCoords());//naprawic spawn dla gracza i wrogow zeby sie nie respili na sobie
+		if (entity == 'p' && !spriteCollision(s) ) {
+			break;
+		}
+
+	}
+}
+
+sf::Vector2f Game::getSpawnCoords()
+{
+	return sf::Vector2f(float((rand() % WINDOW_WIDTH) + 1), float((rand() % WINDOW_HEIGHT) + 1));
+}
+
 void Game::checkPlayerCollision(direction d)
 {
 			if (d == direction::LEFT) {
 				if (player->getPlayerShape().getGlobalBounds().left - playerSpeed >= -30 )
 					player->getPlayerShape().move(-playerSpeed, 0.f);
-				if(playerCollision())
+				if(spriteCollision( &player->getPlayerShape() ))
 					player->getPlayerShape().move(playerSpeed, 0.f);
 			}
-			if (d == direction::RIGHT) {
-				if (player->getPlayerShape().getGlobalBounds().width + player->getPlayerShape().getGlobalBounds().left + playerSpeed <= map->getMapX() - 55)
-					player->getPlayerShape().move(playerSpeed, 0.f);
-				if (playerCollision())
-					player->getPlayerShape().move(-playerSpeed, 0.f);
+			else {
+				if (d == direction::RIGHT) {
+					if (player->getPlayerShape().getGlobalBounds().width + player->getPlayerShape().getGlobalBounds().left + playerSpeed <= map->getMapX() - 55)
+						player->getPlayerShape().move(playerSpeed, 0.f);
+					if (spriteCollision(&player->getPlayerShape()))
+						player->getPlayerShape().move(-playerSpeed, 0.f);
+				}
 			}
+			
 			if (d == direction::UP) {
 				if (player->getPlayerShape().getGlobalBounds().top - playerSpeed >= -30)
 					player->getPlayerShape().move(0.f, -playerSpeed);
-				if (playerCollision())
+				if (spriteCollision( &player->getPlayerShape() ))
 					player->getPlayerShape().move(0.f, playerSpeed);
 			}
-			if (d == direction::DOWN) {
-				if (player->getPlayerShape().getGlobalBounds().height + player->getPlayerShape().getGlobalBounds().top + playerSpeed <= map->getMapY() - 70)
-					player->getPlayerShape().move(0.f, playerSpeed);
-				if (playerCollision())
-					player->getPlayerShape().move(0.f, -playerSpeed);
-			}			
+			else {
+				if (d == direction::DOWN) {
+					if (player->getPlayerShape().getGlobalBounds().height + player->getPlayerShape().getGlobalBounds().top + playerSpeed <= map->getMapY() - 70)
+						player->getPlayerShape().move(0.f, playerSpeed);
+					if (spriteCollision(&player->getPlayerShape()))
+						player->getPlayerShape().move(0.f, -playerSpeed);
+				}
+			}
+			
 }
 
-bool Game::playerCollision()
+bool Game::spriteCollision(sf::Sprite *s)
 {
 	for (int i = 0; i < map->getShapeRows(); i++) {
 		for (int j = 0; j < map->getShapeCols(); j++) {
-			if (Collision::PixelPerfectTest(player->getPlayerShape(), map->shapes[i][j])) {
+			if (Collision::PixelPerfectTest(*s, map->shapes[i][j])) {
 				return true;
 			}
 		}
@@ -233,65 +304,65 @@ bool Game::playerCollision()
 	return false;
 }
 
-void Game::AsyncPacketSend() {
-	network->sendPacket(packet);
-}
+//void Game::AsyncPacketSend() {
+	//if (player->getPlayerShape().getPosition().x != playerPrevPos.x || player->getPlayerShape().getPosition().y != playerPrevPos.y) {
+		//std::cout << "\nSENDING\n" << packetType.Player_Update << player->getPlayerNick() << player->getPlayerShape().getPosition().x << player->getPlayerShape().getPosition().y;
+		//packet << player->getPlayerNick() << player->getPlayerShape().getPosition().x << player->getPlayerShape().getPosition().y;
+		//playerPrevPos = player->getPlayerShape().getPosition();
+		//network->sendPacket(packet);
+	//}	
+//}
 
-void Game::asyncReceivePacket()
-{
-	network->receivePacket(packet);
-}
+//void Game::asyncReceivePacket()
+//{
+	//network->receivePacket(packet);
+	//checkPacketType();
+//}
 
-void Game::checkPacketType()
-{
-	sf::Int8 pType;
-	std::string name;
-	packet >> pType >> name;
-	std::cout << "\npType:\t"<<int(pType);
+//void Game::checkPacketType()
+//{
+	//int pType;
+	//std::string name;
+	//packet >> pType >> name >> a.x >> a.y;
+	//std::cout << "\npType:\t"<<pType << "\tname\t" << name;
 
-	if ((PacketType)pType == PacketType::Player_Update) {
+	//if (pType ==packetType.Player_Update) {
 		//do usuaniecia TEST
-		packet >> pType >> name >> a.x >> a.y;
-		if (a.x != NAN || a.x != -NAN) {
-			std::cout << a.x << "\t" << a.y << std::endl;
-			for (int i = 0; i < enemy.size(); i++) {
-				if (enemy.at(i).getEnemyNick() == name) {
-					enemy.at(i).getEnemyShape().setPosition(a);
-					break;
-				}
-					
-			}
-		}
-	}
-	else {
-		if ((PacketType)pType == PacketType::Connect) {
+		//if (a.x != NAN || a.x != -NAN) {
+			//std::cout <<"\t"<< a.x << "\t" << a.y << std::endl;
+			//for (int i = 0; i < enemy.size(); i++) {
+				//if (enemy.at(i)->getEnemyNick() == name) {
+					//enemy.at(i)->getEnemyShape().setPosition(a);
+					//break;
+				//}
+			//}
+		//}
+	//}
+	//else {
+		//if (pType == packetType.Connect) {
+			//enemy.push_back(new Enemy(name));
+			//std::cout << "NOWY PRZECIWNIK";
+		//}
+		//else {
+			//for (int i = 0; i < enemy.size(); i++) {
+				//if (enemy.at(i)->getEnemyNick() == name) {
+					//enemy.erase(enemy.begin() + i);
+					//break;
+				//}
 
-			enemy.push_back(Enemy(name));
-			std::cout << "NOWY PRZECIWNIK";
-		}
-		else {
-			for (int i = 0; i < enemy.size(); i++) {
-				if (enemy.at(i).getEnemyNick() == name) {
-					enemy.erase(enemy.begin() + i);
-					break;
-				}
+			//}
 
-			}
-
-		}
-	}
+		//}
+	//}
 	
-	
-
-
-	packet.clear();
-}
+	//packet.clear();
+//}
 
 Game::~Game()
 {
 	delete(map);
 	delete(player);
-	delete(network);
+	//delete(network);
 }
 
 
