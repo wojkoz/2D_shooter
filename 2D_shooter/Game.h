@@ -26,11 +26,13 @@ public:
 			Game();
 	void	run();					//main function
 			~Game();
+	void	update(sf::RenderWindow& window);				//updateing frames
+	void	render(sf::RenderWindow& window);				//render new frames
+	bool dead = false;
 
 private:
-	void	processEvents();		//processing user input
-	void	update();				//updateing frames
-	void	render();				//render new frames
+
+
 
 	void asyncPlayerMovement();
 	enum direction {
@@ -48,7 +50,6 @@ private:
 
 	int MAX_ENEMY_ON_MAP = 15;		//player can change this up to 25
 
-	sf::RenderWindow window;		//window
 
 	//player & enemy
 	Player *player;

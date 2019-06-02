@@ -2,7 +2,6 @@
 
 
 Game::Game()
-	:	window(sf::VideoMode(WINDOW_HEIGHT, WINDOW_WIDTH),"2D Shooter")
 {
 	srand(unsigned int(time(nullptr)));
 
@@ -13,7 +12,7 @@ Game::Game()
 	respawnEntity(&player->getPlayerShape(), 'p');
 	//player->getPlayerShape().setPosition(2.0f, 2.0f);
 
-	window.setFramerateLimit(60);
+	
 							//font for player name
 	if (!font.loadFromFile("res/Font/PlayerName/data-latin.ttf")) {
 		std::cout << "Error, couldn't find Font/PlayerName/RemachineScript_Personal_Use.ttf"<<std::endl;
@@ -46,13 +45,10 @@ Game::Game()
 void Game::run() { 
 
 
-	while(window.isOpen()) 
-	{
-		processEvents();
-		std::future<void> r(std::async(&Game::update, this));
-		r.get();
-		render();		
-	}
+		//std::future<void> r(std::async(&Game::update, this));
+		//r.get();
+	
+
 
 	//packet.clear();
 	//packetType.makePacketType(packetType.Disconnect, packet);
@@ -61,17 +57,9 @@ void Game::run() {
 	
 }
 
-void Game::processEvents() { 
-	sf::Event event; 
-	while(window.pollEvent(event)) 
-	{ 
-		if (event.type == sf::Event::Closed)
-			window.close();		
-	} 
 
-}
 
-void Game::update() {
+void Game::update(sf::RenderWindow& window) {
 	//network recevie packet
 	//std::future<void> rp(std::async(&Game::asyncReceivePacket, this));
 
@@ -152,7 +140,7 @@ void Game::asyncPlayerMovement()
 		checkPlayerCollision(direction::DOWN);
 }
 
-void Game::render() {
+void Game::render(sf::RenderWindow& window) {
 	window.clear(sf::Color(0,153,0)); 
 	//start drawing here
 	 for(int i = 0; i<20;i++)
@@ -201,6 +189,7 @@ bool Game::enemyPlayerCollisionSpawn()
 			//player death
 			killCounter = 0;
 			respawnEntity(&player->getPlayerShape(), 'p');
+			dead = true;
 			return true;
 		}
 	}
