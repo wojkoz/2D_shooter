@@ -61,15 +61,21 @@ private:
 	std::vector<Enemy*> enemy;
 	void checkAmountOfEnemy();
 	void addEnemy();
-	void respawnEntity(sf::Sprite *s, char entity);	//use ONLY after Map init		
+	void respawnEntity(sf::Sprite *s, char entity);	//use ONLY after Map init	
+	void enemyMovment();
+	void changeEnemyDir(sf::Sprite *s);
 	sf::Vector2f getSpawnCoords();			
 
 	//Colissions
 	const float playerSpeed = 10.f;
+	const float enemySpeed = 2.f;
 	void checkPlayerCollision(direction d);
 	bool spriteCollision(sf::Sprite *s);
 	void asyncCollision();
-	bool enemyPlayerCollision();
+	bool enemyPlayerCollisionSpawn();
+	bool checkAllEnemyPosCollision(sf::Sprite *s);
+	bool checkPlayerPos(sf::Sprite *s);
+	bool enemyNotInMapBorder(sf::Sprite *s);
 
 	//Vectors
 	Vector2f playerCenter;

@@ -7,10 +7,11 @@ Game::Game()
 	srand(unsigned int(time(nullptr)));
 
 	map = new Map();
+
 	//player nick
 	player = new Player("TheEnter3");
-	//respawnEntity(&player->getPlayerShape(), 'p');
-	player->getPlayerShape().setPosition(2.0f, 2.0f);
+	respawnEntity(&player->getPlayerShape(), 'p');
+	//player->getPlayerShape().setPosition(2.0f, 2.0f);
 
 	window.setFramerateLimit(60);
 							//font for player name
@@ -81,6 +82,12 @@ void Game::update() {
 	
 	//Enemy
 	checkAmountOfEnemy();
+	enemyMovment();
+
+
+	if (enemyPlayerCollisionSpawn()) {
+		return;
+	}
 	
 	sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
 	sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos); //changing coordinates of mouse in window to world coordinates when windows is resized or player is further than
@@ -186,7 +193,7 @@ void Game::asyncCollision() {
 	}
 }
 
-bool Game::enemyPlayerCollision()
+bool Game::enemyPlayerCollisionSpawn()
 {
 	for (int i = 0; i < enemy.size() ; i++) {
 
@@ -198,6 +205,42 @@ bool Game::enemyPlayerCollision()
 		}
 	}
 	return false;
+}
+
+bool Game::checkAllEnemyPosCollision(sf::Sprite * s)
+{
+	for (int i = 0; i < enemy.size(); i++) {
+
+		if (Collision::PixelPerfectTest(*s, enemy.at(i)->getEnemyShape())) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Game::checkPlayerPos(sf::Sprite * s)
+{
+	if (Collision::PixelPerfectTest(*s, player->getPlayerShape()))
+		return true;
+	return false;
+}
+
+bool Game::enemyNotInMapBorder(sf::Sprite * s)
+{
+	if ((s->getGlobalBounds().width + s->getGlobalBounds().left > map->getMapX())) {
+		return true;
+	}
+	if ((s->getGlobalBounds().left < 0)) {
+		return true;
+	}
+	if (s->getGlobalBounds().top < 0) {
+		return true;
+	}
+	if (s->getGlobalBounds().top + s->getGlobalBounds().height > map->getMapY()) {
+		return true;
+	}
+	return false;
+	
 }
 
 bool Game::isCollision(Bullet bullet)
@@ -242,15 +285,76 @@ void Game::addEnemy()
 	respawnEntity(&enemy.back()->getEnemyShape(), 'e');
 }
 
-void Game::respawnEntity(sf::Sprite * s, char entity)//p player, e enemy
+void Game::respawnEntity(sf::Sprite * s, char entity = 'e')//p player, e enemy
 {
 	while (true) {
 		s->setPosition(getSpawnCoords());//naprawic spawn dla gracza i wrogow zeby sie nie respili na sobie
-		if (entity == 'p' && !spriteCollision(s) ) {
-			break;
+		if (entity == 'p') {
+			if (!spriteCollision(s)) {
+				if (!checkAllEnemyPosCollision(&player->getPlayerShape())) {
+					break;
+				}
+				else {
+					continue;
+				}
+			}
+		}
+		else {
+			if (!spriteCollision(s) && !checkPlayerPos(s)) {
+				break;
+			}
+			else {
+				continue;
+			}
 		}
 
 	}
+}
+
+void Game::enemyMovment()
+{
+	for (auto i = 0; i < enemy.size(); i++) {
+		changeEnemyDir(&enemy.at(i)->getEnemyShape());
+		if (enemyNotInMapBorder(&enemy.at(i)->getEnemyShape())) {
+			enemy.erase(enemy.begin() + i);
+		}
+	}
+}
+
+void Game::changeEnemyDir(sf::Sprite * s)
+{
+	auto eX = s->getPosition().x;//enemy x pos
+	auto eY = s->getPosition().y;//enemy y pos
+
+	auto pX = player->getPlayerShape().getPosition().x;
+	auto pY = player->getPlayerShape().getPosition().y;
+
+	if (eX <= pX) {
+		if(spriteCollision(s))
+			s->move(-enemySpeed, 0.0f);
+		else
+			s->move(enemySpeed, 0.0f);
+	}
+	if(eX > pX) {
+		if (spriteCollision(s))
+			s->move(enemySpeed, 0.0f);
+		else
+			s->move(-enemySpeed, 0.0f);
+	}
+
+	if (eY <= pY) {
+		if (spriteCollision(s))
+			s->move(0.0f, -enemySpeed);
+		else
+			s->move(0.0f, enemySpeed);	
+	}
+	else {
+		if (spriteCollision(s))
+			s->move(0.0f, enemySpeed);
+		else
+			s->move(0.0f, -enemySpeed);	
+	}
+
 }
 
 sf::Vector2f Game::getSpawnCoords()
