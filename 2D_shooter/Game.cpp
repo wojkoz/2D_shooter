@@ -42,23 +42,6 @@ Game::Game()
 	//packet.clear();
 }
 
-void Game::run() { 
-
-
-		//std::future<void> r(std::async(&Game::update, this));
-		//r.get();
-	
-
-
-	//packet.clear();
-	//packetType.makePacketType(packetType.Disconnect, packet);
-	//packet << player->getPlayerNick();
-	//network->sendPacket(packet);
-	
-}
-
-
-
 void Game::update(sf::RenderWindow& window) {
 	//network recevie packet
 	//std::future<void> rp(std::async(&Game::asyncReceivePacket, this));
@@ -166,6 +149,12 @@ void Game::render(sf::RenderWindow& window) {
 
 	//stop drawing here
 	window.display(); 
+}
+
+void Game::setNick(std::string n)
+{
+	player->setPlayerNick(n);
+	playerNameText.setString(n);
 }
 
 void Game::asyncCollision() {

@@ -35,7 +35,7 @@ int main() {
 								case 0:
 									std::cout << "Play button has been pressed" << std::endl;
 									game->dead = false;
-
+									game->setNick(playerName);
 									while (!game->dead) {
 										game->update(window);
 										game->render(window);
@@ -44,15 +44,10 @@ int main() {
 									
 									break;
 								case 1:
-									std::cout << "Option button has been pressed" << std::endl;
-									break;
-								case 2:
+									std::cout << "Exit button has been pressed" << std::endl;
 									window.close();
 									break;
 							}
-						case sf::Keyboard::BackSpace:
-							playerName = playerName.substr(0, playerName.length() - 1);
-							break;
 
 							break;
 					}
@@ -60,6 +55,8 @@ int main() {
 					break;
 				case sf::Event::TextEntered:
 					playerName += static_cast<char>(event.text.unicode);
+					system("cls");
+					std::cout << playerName;
 					break;
 
 				case sf::Event::Closed:

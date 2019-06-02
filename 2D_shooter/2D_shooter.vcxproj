@@ -156,6 +156,8 @@
     <ClInclude Include="Player\Player.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="arena.txt" />
+    <Text Include="mapa.txt" />
     <Text Include="Map\Map1.txt" />
   </ItemGroup>
   <ItemGroup>

@@ -34,10 +34,13 @@ int Map::getShapeCols()
 }
 
 void Map::loadMap() {
-	file.open("Map1.txt");		//file with map structure
+	file.open("arena.txt");		//file with map structure
 	if (file.is_open()) {
 
 		while (!file.eof()) {
+			if (counter.x > 20 || counter.y > 20) {
+				map = makeArray<sf::Vector2i>(counter.x+1, counter.y+1);
+			}
 			std::string str;
 			file >> str;
 			char x = str[0], y = str[2];
@@ -63,12 +66,14 @@ void Map::loadMap() {
 	else {			//when can't load file with map structure
 		for (int i = 0; i < 20; i++)
 			for (int j = 0; j < 20; j++)
-				map[i][j] = sf::Vector2i(-1, -1);
+				map[i][j] = sf::Vector2i(1, 1);
 	}
 }
 
 void Map::makeShapes() {
-
+	if (counter.x > 20 || counter.y > 20) {
+		shapes = makeArray<sf::Sprite>(counter.x, counter.y);
+	}
 	for(int i = 0; i<counter.x; i++)
 		for (int j = 0; j < counter.y; j++) {
 			if (map[i][j].x != -1 && map[i][j].y != -1) {

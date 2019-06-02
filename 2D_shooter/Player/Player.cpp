@@ -11,7 +11,7 @@ Player::Player(std::string name)
 
 	Shape.setScale(0.5f, 0.5f);
 	Shape.setPosition(50.f, 50.f);
-	Shape.setOrigin(sf::Vector2f(Shape.getTexture()->getSize().x / 2, Shape.getTexture()->getSize().y / 2));
+	Shape.setOrigin(sf::Vector2f(Shape.getTexture()->getSize().x / float(2), Shape.getTexture()->getSize().y / float(2)));
 }
 
 sf::Sprite& Player::getPlayerShape()
@@ -32,6 +32,11 @@ void Player::decresePlayerHp(int dmg)
 int Player::getPlayerHp()
 {
 	return getHp();
+}
+
+void Player::setPlayerNick(std::string & n)
+{
+	setNick(n);
 }
 
 

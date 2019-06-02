@@ -9,6 +9,7 @@ public:
 	std::string getPlayerNick();
 	void decresePlayerHp(int dmg);
 	int getPlayerHp();
+	void setPlayerNick(std::string& n);
 private:
 	
 };

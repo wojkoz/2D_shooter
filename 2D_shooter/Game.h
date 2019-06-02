@@ -30,6 +30,8 @@ public:
 	void	render(sf::RenderWindow& window);				//render new frames
 	bool dead = false;
 
+	void setNick(std::string n);
+
 private:
 
 
