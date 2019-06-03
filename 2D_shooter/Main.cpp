@@ -53,11 +53,11 @@ int main() {
 					}
 
 					break;
-				case sf::Event::TextEntered:
-					playerName += static_cast<char>(event.text.unicode);
-					system("cls");
-					std::cout << playerName;
-					break;
+				//case sf::Event::TextEntered:
+					//playerName += static_cast<char>(event.text.unicode);
+					//system("cls");
+					//std::cout << playerName;
+					//break;
 
 				case sf::Event::Closed:
 					window.close();

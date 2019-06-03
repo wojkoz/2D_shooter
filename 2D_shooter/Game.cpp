@@ -179,6 +179,7 @@ bool Game::enemyPlayerCollisionSpawn()
 			killCounter = 0;
 			respawnEntity(&player->getPlayerShape(), 'p');
 			dead = true;
+			bullets.clear();
 			return true;
 		}
 	}

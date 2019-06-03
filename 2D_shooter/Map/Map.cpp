@@ -4,8 +4,8 @@
 
 Map::Map()
 {
-	map = makeArray<sf::Vector2i>(20, 20);
-	shapes = makeArray<sf::Sprite>(20, 20);
+	map = makeArray<sf::Vector2i>(100, 100);
+	shapes = makeArray<sf::Sprite>(100, 100);
 	Collision::CreateTextureAndBitmask(texture, "res/sprite/background.png");
 
 	sf::Vector2i counter = sf::Vector2i(0, 0);
@@ -34,13 +34,11 @@ int Map::getShapeCols()
 }
 
 void Map::loadMap() {
-	file.open("arena.txt");		//file with map structure
+	file.open("mapa.txt");		//file with map structure
 	if (file.is_open()) {
 
 		while (!file.eof()) {
-			if (counter.x > 20 || counter.y > 20) {
-				map = makeArray<sf::Vector2i>(counter.x+1, counter.y+1);
-			}
+
 			std::string str;
 			file >> str;
 			char x = str[0], y = str[2];
@@ -53,8 +51,10 @@ void Map::loadMap() {
 				
 
 			if (file.peek() == '\n') {
-				counter.x = 0;
 				counter.y++;
+				map = makeArray<sf::Vector2i>(counter.x, counter.y);
+				counter.x = 0;
+				
 			}
 			else {
 				counter.x++;
@@ -71,9 +71,9 @@ void Map::loadMap() {
 }
 
 void Map::makeShapes() {
-	if (counter.x > 20 || counter.y > 20) {
-		shapes = makeArray<sf::Sprite>(counter.x, counter.y);
-	}
+	//if (counter.x > 20 || counter.y > 20) {
+		//shapes = makeArray<sf::Sprite>(counter.x, counter.y);
+	//}
 	for(int i = 0; i<counter.x; i++)
 		for (int j = 0; j < counter.y; j++) {
 			if (map[i][j].x != -1 && map[i][j].y != -1) {

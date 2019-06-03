@@ -24,7 +24,6 @@ class Game
 {
 public:
 			Game();
-	void	run();					//main function
 			~Game();
 	void	update(sf::RenderWindow& window);				//updateing frames
 	void	render(sf::RenderWindow& window);				//render new frames

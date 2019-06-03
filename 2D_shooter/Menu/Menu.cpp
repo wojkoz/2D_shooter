@@ -30,10 +30,15 @@ Menu::~Menu()
 
 void Menu::draw(sf::RenderWindow &window)
 {
+	sf::View view;
+	view.setSize(800,800);
+	view.setCenter(800/2, 800/2);
+	window.setView(view);
 	for (int i = 0; i < MAX_NUMBER_OF_ITEMS; i++)
 	{
 		window.draw(menu[i]);
 	}
+	window.setView(window.getDefaultView());
 }
 
 void Menu::MoveUp()
