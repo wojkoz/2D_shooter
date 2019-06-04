@@ -35,7 +35,7 @@ int main() {
 								case 0:
 									std::cout << "Play button has been pressed" << std::endl;
 									game->dead = false;
-									game->setNick(playerName);
+									//game->setNick(playerName);
 									while (!game->dead) {
 										game->update(window);
 										game->render(window);

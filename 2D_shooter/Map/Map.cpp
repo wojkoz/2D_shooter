@@ -1,11 +1,9 @@
 #include "Map.h"
 
-
-
 Map::Map()
 {
-	map = makeArray<sf::Vector2i>(20, 20);
-	shapes = makeArray<sf::Sprite>(20, 20);
+	map = makeArray<sf::Vector2i>(50, 50);
+	shapes = makeArray<sf::Sprite>(50, 50);
 	Collision::CreateTextureAndBitmask(texture, "res/sprite/background.png");
 
 	sf::Vector2i counter = sf::Vector2i(0, 0);

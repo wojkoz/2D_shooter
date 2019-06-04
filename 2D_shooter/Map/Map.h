@@ -11,7 +11,7 @@ class Map
 {
 public:
 	Map();
-	std::vector<std::vector<sf::Sprite>> shapes;
+	sf::Sprite **shapes;
 	int getMapX();
 	int getMapY();
 	int getShapeRows();		//rows
@@ -25,12 +25,11 @@ private:
 	template <class T> void deleteArray(T array, int n);//destroys array
 
 	std::fstream file;
-	//sf::Vector2i **map;
-	std::vector<std::vector<sf::Vector2i>> map;
+	sf::Vector2i **map;
 	sf::Vector2i counter;
 	sf::Texture texture;
 
-	
+
 };
 
 template<class T>

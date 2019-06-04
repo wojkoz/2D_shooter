@@ -60,7 +60,7 @@ private:
 	int killCounter;
 
 	//Enemy * enemy;
-	std::vector<Enemy> enemy;
+	std::vector<Enemy*> enemy;
 	void checkAmountOfEnemy();
 	void addEnemy();
 	void respawnEntity(sf::Sprite *s, char entity);	//use ONLY after Map init	
