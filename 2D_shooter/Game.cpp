@@ -9,7 +9,9 @@ Game::Game()
 
 	//player nick
 	player = new Player("TheEnter3");
+	
 	respawnEntity(&player->getPlayerShape(), 'p');
+	
 	//player->getPlayerShape().setPosition(2.0f, 2.0f);
 
 	
@@ -28,7 +30,7 @@ Game::Game()
 		killCounterText.setFillColor(sf::Color::White);
 		killCounterText.setScale(1.5f, 1.5f);
 	}
-
+	
 	killCounter = 0;
 	//network
 	// dodac GUI i pobierac IP, port, nick
@@ -128,7 +130,7 @@ void Game::render(sf::RenderWindow& window) {
 	//start drawing here
 	 for(int i = 0; i<20;i++)
 		 for (int j = 0; j < 20; j++) {
-			 window.draw(map->shapes[i][j]);
+			 window.draw(map->shapes.at(i).at(j));
 		 }
 	 //centering view on player
 	 window.setView(viewPlayer);
@@ -141,7 +143,7 @@ void Game::render(sf::RenderWindow& window) {
 
 	//drawing enemy, player
 	 for (int i = 0; i < enemy.size(); i++) {
-		 window.draw(enemy.at(i)->getEnemyShape());
+		 window.draw(enemy.at(i).getEnemyShape());
 	}
 	window.draw(player->getPlayerShape());
 	window.draw(playerNameText);
@@ -174,7 +176,7 @@ bool Game::enemyPlayerCollisionSpawn()
 {
 	for (int i = 0; i < enemy.size() ; i++) {
 
-		if (Collision::PixelPerfectTest(player->getPlayerShape(), enemy.at(i)->getEnemyShape())) {
+		if (Collision::PixelPerfectTest(player->getPlayerShape(), enemy.at(i).getEnemyShape())) {
 			//player death
 			killCounter = 0;
 			respawnEntity(&player->getPlayerShape(), 'p');
@@ -190,7 +192,7 @@ bool Game::checkAllEnemyPosCollision(sf::Sprite * s)
 {
 	for (int i = 0; i < enemy.size(); i++) {
 
-		if (Collision::PixelPerfectTest(*s, enemy.at(i)->getEnemyShape())) {
+		if (Collision::PixelPerfectTest(*s, enemy.at(i).getEnemyShape())) {
 			return true;
 		}
 	}
@@ -237,7 +239,7 @@ bool Game::isCollision(Bullet bullet)
 				}
 				else {//enemy collision with bullets
 					for(int k = 0; k<enemy.size(); k++)
-						if (Collision::PixelPerfectTest(bullet.shape, enemy.at(k)->getEnemyShape())) {
+						if (Collision::PixelPerfectTest(bullet.shape, enemy.at(k).getEnemyShape())) {
 							killCounter++;
 							enemy.erase(enemy.begin() + k);
 							return true;
@@ -260,16 +262,18 @@ void Game::checkAmountOfEnemy()
 
 void Game::addEnemy()
 {
-	enemy.push_back(new Enemy("1"));
-	respawnEntity(&enemy.back()->getEnemyShape(), 'e');
+	enemy.push_back(Enemy("1"));
+	respawnEntity(&enemy.back().getEnemyShape(), 'e');
 }
 
 void Game::respawnEntity(sf::Sprite * s, char entity = 'e')//p player, e enemy
 {
 	while (true) {
 		s->setPosition(getSpawnCoords());//naprawic spawn dla gracza i wrogow zeby sie nie respili na sobie
+		
 		if (entity == 'p') {
 			if (!spriteCollision(s)) {
+				std::cout << "test";
 				if (!checkAllEnemyPosCollision(&player->getPlayerShape())) {
 					break;
 				}
@@ -293,8 +297,8 @@ void Game::respawnEntity(sf::Sprite * s, char entity = 'e')//p player, e enemy
 void Game::enemyMovment()
 {
 	for (auto i = 0; i < enemy.size(); i++) {
-		changeEnemyDir(&enemy.at(i)->getEnemyShape());
-		if (enemyNotInMapBorder(&enemy.at(i)->getEnemyShape())) {
+		changeEnemyDir(&enemy.at(i).getEnemyShape());
+		if (enemyNotInMapBorder(&enemy.at(i).getEnemyShape())) {
 			enemy.erase(enemy.begin() + i);
 		}
 	}
@@ -338,7 +342,7 @@ void Game::changeEnemyDir(sf::Sprite * s)
 
 sf::Vector2f Game::getSpawnCoords()
 {
-	return sf::Vector2f(float((rand() % WINDOW_WIDTH) + 1), float((rand() % WINDOW_HEIGHT) + 1));
+	return sf::Vector2f(float((rand() % (map->getMapX()*100)) + 1), float((rand() % (map->getMapY()*100)) + 1));
 }
 
 void Game::checkPlayerCollision(direction d)
@@ -379,7 +383,7 @@ bool Game::spriteCollision(sf::Sprite *s)
 {
 	for (int i = 0; i < map->getShapeRows(); i++) {
 		for (int j = 0; j < map->getShapeCols(); j++) {
-			if (Collision::PixelPerfectTest(*s, map->shapes[i][j])) {
+			if (Collision::PixelPerfectTest(*s, map->shapes.at(i).at(j))) {
 				return true;
 			}
 		}
