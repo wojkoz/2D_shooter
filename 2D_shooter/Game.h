@@ -47,9 +47,9 @@ private:
 	const int WINDOW_WIDTH = 800;
 	const float PI = 3.14159265f;
 	const int MAX_BULLET_COUNT = 5;
-	const int MIN_ENEMY_ON_MAP = 5;
+	const int MIN_ENEMY_ON_MAP = 3;
 
-	int MAX_ENEMY_ON_MAP = 15;		//player can change this up to 25
+	int MAX_ENEMY_ON_MAP = 5;		// after 10th kill + 5
 
 
 	//player & enemy
@@ -92,6 +92,7 @@ private:
 	Map *map;
 
 	sf::View viewPlayer;
+	sf::View minimapView;
 
 	//network
 	//Network *network;

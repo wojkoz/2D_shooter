@@ -13,12 +13,12 @@ Map::Map()
 
 int Map::getMapX()
 {
-	return counter.x * 100;
+	return counter.x * 100 ;
 }
 
 int Map::getMapY()
 {
-	return counter.y * 100;
+	return counter.y * 100 ;
 }
 
 int Map::getShapeRows()
@@ -32,7 +32,7 @@ int Map::getShapeCols()
 }
 
 void Map::loadMap() {
-	file.open("arena.txt");		//file with map structure
+	file.open("Map1.txt");		//file with map structure
 	if (file.is_open()) {
 		std::vector<std::vector<std::string>> s;
 		std::string tmp;
@@ -48,8 +48,8 @@ void Map::loadMap() {
 				counter.x = 0;
 			}
 			else {
-				counter.x++;
 				a->push_back(tmp);
+				counter.x++;				
 			}
 
 		}
@@ -66,7 +66,6 @@ void Map::loadMap() {
 			for (auto j = 0; j < counter.x; j++) {
 				if ( isdigit(s[i][j].at(0)) && isdigit(s[i][j].at(2)) ) {
 					map[i][j] = sf::Vector2i(s[i][j].at(0) - '0', s[i][j].at(2) - '0');//ASCI 0 == 48, 1 == 49, 1-48 == 1
-					std::cout << s[i][j].at(0) - '0' << "\t" << s[i][j].at(2) - '0' << std::endl;
 				}
 				else {
 					map[i][j] = sf::Vector2i(-1, -1);//draw background when x,x in file
@@ -95,7 +94,6 @@ void Map::makeShapes() {
 
 				shapes[i][j] = sf::Sprite();
 				shapes[i][j].setPosition(sf::Vector2f(i*100.f, j*100.f));
-				//temporary coloring
 				shapes[i][j].scale(4.f, 4.f);
 				shapes[i][j].setTexture(texture);
 				shapes[i][j].setColor(sf::Color(0, 0, 255));

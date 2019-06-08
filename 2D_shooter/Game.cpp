@@ -11,8 +11,6 @@ Game::Game()
 	player = new Player("TheEnter3");
 	
 	respawnEntity(&player->getPlayerShape(), 'p');
-	
-	//player->getPlayerShape().setPosition(2.0f, 2.0f);
 
 	
 							//font for player name
@@ -33,6 +31,8 @@ Game::Game()
 	}
 	
 	killCounter = 0;
+
+	minimapView.setViewport(sf::FloatRect(0.75f, 0.f, 0.25f, 0.25f));
 	//network
 	// dodac GUI i pobierac IP, port, nick
 
@@ -53,6 +53,8 @@ void Game::update(sf::RenderWindow& window) {
 
 	//std::future<void> cpt(std::async(&Game::checkPacketType, this));
 	//checkPacketType();
+	if (killCounter > 0 && killCounter % 10 == 0 && MAX_ENEMY_ON_MAP < 50)
+		MAX_ENEMY_ON_MAP += 5;
 	
 	//Enemy
 	checkAmountOfEnemy();
@@ -96,6 +98,7 @@ void Game::update(sf::RenderWindow& window) {
 		
 	//scroll view
 	viewPlayer.setCenter(playerCenter);
+	minimapView.setCenter(playerCenter);
 	viewPlayer.setSize(sf::Vector2f((float)WINDOW_WIDTH, (float)WINDOW_HEIGHT));
 	
 	//bullets collision result
@@ -133,6 +136,21 @@ void Game::render(sf::RenderWindow& window) {
 		 for (int j = 0; j < map->getShapeCols(); j++) {
 			 window.draw(map->shapes[i][j]);
 		 }
+	 //drawing enemy, player
+	 for (int i = 0; i < enemy.size(); i++) {
+		 window.draw(enemy.at(i)->getEnemyShape());
+	 }
+	 window.setView(minimapView);
+
+	 for (int i = 0; i < map->getShapeRows(); i++)
+		 for (int j = 0; j < map->getShapeCols(); j++) {
+			 window.draw(map->shapes[i][j]);
+		 }
+	 //drawing enemy, player
+	 for (int i = 0; i < enemy.size(); i++) {
+		 window.draw(enemy.at(i)->getEnemyShape());
+	 }
+	 window.draw(player->getPlayerShape());
 	 //centering view on player
 	 window.setView(viewPlayer);
 	
@@ -142,10 +160,7 @@ void Game::render(sf::RenderWindow& window) {
 		 window.draw(bullets[i].shape);
 	 }
 
-	//drawing enemy, player
-	 for (int i = 0; i < enemy.size(); i++) {
-		 window.draw(enemy.at(i)->getEnemyShape());
-	}
+
 	window.draw(player->getPlayerShape());
 	window.draw(playerNameText);
 	window.draw(killCounterText);
@@ -271,7 +286,7 @@ void Game::addEnemy()
 void Game::respawnEntity(sf::Sprite * s, char entity = 'e')//p player, e enemy
 {
 	while (true) {
-		s->setPosition(getSpawnCoords());//naprawic spawn dla gracza i wrogow zeby sie nie respili na sobie
+		s->setPosition(getSpawnCoords());
 		
 		if (entity == 'p') {
 			if (!spriteCollision(s)) {
@@ -344,7 +359,7 @@ void Game::changeEnemyDir(sf::Sprite * s)
 
 sf::Vector2f Game::getSpawnCoords()
 {
-	return sf::Vector2f(float((rand() % WINDOW_WIDTH) + 1), float((rand() % WINDOW_HEIGHT) + 1));
+	return sf::Vector2f(float((rand() % map->getMapX()) + 1), float((rand() % map->getMapY()) + 1));
 }
 
 void Game::checkPlayerCollision(direction d)
