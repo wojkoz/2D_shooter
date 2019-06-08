@@ -129,8 +129,8 @@ void Game::asyncPlayerMovement()
 void Game::render(sf::RenderWindow& window) {
 	window.clear(sf::Color(0,153,0)); 
 	//start drawing here
-	 for(int i = 0; i<20;i++)
-		 for (int j = 0; j < 20; j++) {
+	 for(int i = 0; i<map->getShapeRows();i++)
+		 for (int j = 0; j < map->getShapeCols(); j++) {
 			 window.draw(map->shapes[i][j]);
 		 }
 	 //centering view on player

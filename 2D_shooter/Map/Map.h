@@ -33,7 +33,7 @@ private:
 };
 
 template<class T>
-inline T ** Map::makeArray(int n, int m)
+T ** Map::makeArray(int n, int m)
 {
 	T ** array = new T  *[n];
 	for (int i = 0; i < n; i++) {
@@ -44,7 +44,7 @@ inline T ** Map::makeArray(int n, int m)
 }
 
 template<class T>
-inline void Map::deleteArray(T array, int n)
+void Map::deleteArray(T array, int n)
 {
 	for (int i = 0; i < n; ++i) {
 		delete[] array[i];

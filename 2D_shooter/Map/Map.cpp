@@ -2,8 +2,8 @@
 
 Map::Map()
 {
-	map = makeArray<sf::Vector2i>(50, 50);
-	shapes = makeArray<sf::Sprite>(50, 50);
+	map = makeArray<sf::Vector2i>(20, 20);
+	shapes = makeArray<sf::Sprite>(20, 20);
 	Collision::CreateTextureAndBitmask(texture, "res/sprite/background.png");
 
 	sf::Vector2i counter = sf::Vector2i(0, 0);
@@ -32,43 +32,65 @@ int Map::getShapeCols()
 }
 
 void Map::loadMap() {
-	file.open("Map1.txt");		//file with map structure
+	file.open("arena.txt");		//file with map structure
 	if (file.is_open()) {
-
-		while (!file.eof()) {
-			std::string str;
-			file >> str;
-			char x = str[0], y = str[2];
-			if (!isdigit(x) || !isdigit(y)) {
-				map[counter.x][counter.y] = sf::Vector2i(-1, -1);	//draw background when x,x in file
-			}
-			else {
-				map[counter.x][counter.y] = sf::Vector2i(x - '0', y - '0');	//ASCI 0 == 48, 1 == 49, 1-48 == 1
-			}
-
+		std::vector<std::vector<std::string>> s;
+		std::string tmp;
+		
+		std::vector<std::string>* a = new std::vector<std::string>;
+		
+		while (file >> tmp) {
 
 			if (file.peek() == '\n') {
-				counter.x = 0;
+				s.push_back(*a);
+				a->clear();
 				counter.y++;
+				counter.x = 0;
 			}
 			else {
 				counter.x++;
+				a->push_back(tmp);
+			}
+
+		}
+		counter.x--;
+		file.close();
+		
+		//deleteArray(map,counter.y);		
+		//deleteArray(shapes, counter.y);
+
+		map = makeArray<sf::Vector2i>(counter.y, counter.x);
+		shapes = makeArray<sf::Sprite>(counter.y, counter.x);
+
+		for (auto i = 0; i < counter.y; i++) {
+			for (auto j = 0; j < counter.x; j++) {
+				if ( isdigit(s[i][j].at(0)) && isdigit(s[i][j].at(2)) ) {
+					map[i][j] = sf::Vector2i(s[i][j].at(0) - '0', s[i][j].at(2) - '0');//ASCI 0 == 48, 1 == 49, 1-48 == 1
+					std::cout << s[i][j].at(0) - '0' << "\t" << s[i][j].at(2) - '0' << std::endl;
+				}
+				else {
+					map[i][j] = sf::Vector2i(-1, -1);//draw background when x,x in file
+				}
 			}
 		}
-		counter.y++;
-		file.close();
+
+
 	}
-	else {			//when can't load file with map structure
+	else {			//when can't open file with map structure
 		for (int i = 0; i < 20; i++)
-			for (int j = 0; j < 20; j++)
+			for (int j = 0; j < 20; j++) {
 				map[i][j] = sf::Vector2i(-1, -1);
+			}
+		counter.x = 20;
+		counter.y = 20;
+				
 	}
 }
 
 void Map::makeShapes() {
 
-	for (int i = 0; i < counter.x; i++)
-		for (int j = 0; j < counter.y; j++) {
+	for (int i = 0; i < counter.y; i++)
+		for (int j = 0; j < counter.x; j++) {
 			if (map[i][j].x != -1 && map[i][j].y != -1) {
 
 				shapes[i][j] = sf::Sprite();
@@ -86,5 +108,25 @@ void Map::makeShapes() {
 
 Map::~Map()
 {
-
+	deleteArray(map, counter.y);
+	deleteArray(shapes, counter.y);
 }
+
+//std::string str;
+//file >> str;
+//char x = str[0], y = str[2];
+//if (!isdigit(x) || !isdigit(y)) {
+//	map[counter.x][counter.y] = sf::Vector2i(-1, -1);	//draw background when x,x in file
+//}
+//else {
+//	map[counter.x][counter.y] = sf::Vector2i(x - '0', y - '0');	//ASCI 0 == 48, 1 == 49, 1-48 == 1
+//}
+
+
+//if (file.peek() == '\n') {
+//	counter.x = 0;
+//	counter.y++;
+//}
+//else {
+//	counter.x++;
+//}
