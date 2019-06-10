@@ -7,7 +7,13 @@ Map::Map()
 	Collision::CreateTextureAndBitmask(texture, "res/sprite/background.png");
 
 	sf::Vector2i counter = sf::Vector2i(0, 0);
-	loadMap();
+	try {
+		loadMap();
+	}catch (std::string e) {
+		std::cout << e << std::endl;
+		defaultMap();
+	};
+	
 	makeShapes();
 }
 
@@ -55,9 +61,15 @@ void Map::loadMap() {
 		}
 		counter.x--;
 		file.close();
+
+		if (counter.x < 10 || counter.y < 10) {
+			std::string e = "To small map Exception!";
+			throw e;
+		}
+
 		
-		//deleteArray(map,counter.y);		
-		//deleteArray(shapes, counter.y);
+		deleteArray(map,counter.y);		
+		deleteArray(shapes, counter.y);
 
 		map = makeArray<sf::Vector2i>(counter.y, counter.x);
 		shapes = makeArray<sf::Sprite>(counter.y, counter.x);
@@ -75,14 +87,8 @@ void Map::loadMap() {
 
 
 	}
-	else {			//when can't open file with map structure
-		for (int i = 0; i < 20; i++)
-			for (int j = 0; j < 20; j++) {
-				map[i][j] = sf::Vector2i(-1, -1);
-			}
-		counter.x = 20;
-		counter.y = 20;
-				
+	else {
+		defaultMap();
 	}
 }
 
@@ -103,28 +109,20 @@ void Map::makeShapes() {
 		}
 }
 
+void Map::defaultMap()
+{
+	//when can't open file with map structure
+	for (int i = 0; i < 20; i++)
+		for (int j = 0; j < 20; j++) {
+			map[i][j] = sf::Vector2i(-1, -1);
+		}
+	counter.x = 20;
+	counter.y = 20;
+}
+
 
 Map::~Map()
 {
 	deleteArray(map, counter.y);
 	deleteArray(shapes, counter.y);
 }
-
-//std::string str;
-//file >> str;
-//char x = str[0], y = str[2];
-//if (!isdigit(x) || !isdigit(y)) {
-//	map[counter.x][counter.y] = sf::Vector2i(-1, -1);	//draw background when x,x in file
-//}
-//else {
-//	map[counter.x][counter.y] = sf::Vector2i(x - '0', y - '0');	//ASCI 0 == 48, 1 == 49, 1-48 == 1
-//}
-
-
-//if (file.peek() == '\n') {
-//	counter.x = 0;
-//	counter.y++;
-//}
-//else {
-//	counter.x++;
-//}

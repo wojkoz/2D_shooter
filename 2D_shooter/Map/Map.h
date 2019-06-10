@@ -20,6 +20,7 @@ public:
 private:
 	void loadMap();
 	void makeShapes();
+	void defaultMap();
 
 	template <class T> T** makeArray(int n, int m);	//creates basic array 20x20
 	template <class T> void deleteArray(T array, int n);//destroys array

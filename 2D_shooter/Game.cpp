@@ -8,7 +8,7 @@ Game::Game()
 	map = new Map();
 
 	//player nick
-	player = new Player("TheEnter3");
+	player = new Player("Player");
 	
 	respawnEntity(&player->getPlayerShape(), 'p');
 
@@ -53,8 +53,7 @@ void Game::update(sf::RenderWindow& window) {
 
 	//std::future<void> cpt(std::async(&Game::checkPacketType, this));
 	//checkPacketType();
-	if (killCounter > 0 && killCounter % 10 == 0 && MAX_ENEMY_ON_MAP < 50)
-		MAX_ENEMY_ON_MAP += 5;
+	
 	
 	//Enemy
 	checkAmountOfEnemy();
@@ -140,12 +139,14 @@ void Game::render(sf::RenderWindow& window) {
 	 for (int i = 0; i < enemy.size(); i++) {
 		 window.draw(enemy.at(i)->getEnemyShape());
 	 }
+	 //minimap drawing
 	 window.setView(minimapView);
 
 	 for (int i = 0; i < map->getShapeRows(); i++)
 		 for (int j = 0; j < map->getShapeCols(); j++) {
 			 window.draw(map->shapes[i][j]);
 		 }
+
 	 //drawing enemy, player
 	 for (int i = 0; i < enemy.size(); i++) {
 		 window.draw(enemy.at(i)->getEnemyShape());
@@ -194,11 +195,14 @@ bool Game::enemyPlayerCollisionSpawn()
 
 		if (Collision::PixelPerfectTest(player->getPlayerShape(), enemy.at(i)->getEnemyShape())) {
 			//player death
+			std::cout << std::endl << player->getPlayerNick() << ":\tscore:" << killCounter << "\t" << MAX_ENEMY_ON_MAP << std::endl;
 			killCounter = 0;
+			MAX_ENEMY_ON_MAP = 5;
 			respawnEntity(&player->getPlayerShape(), 'p');
 			dead = true;
 			bullets.clear();
 			enemy.clear();
+
 			return true;
 		}
 	}
@@ -259,6 +263,10 @@ bool Game::isCollision(Bullet bullet)
 						if (Collision::PixelPerfectTest(bullet.shape, enemy.at(k)->getEnemyShape())) {
 							killCounter++;
 							enemy.erase(enemy.begin() + k);
+							//10th kill gives 5 more enemies
+							if (killCounter > 0 && killCounter % 10 == 0 && MAX_ENEMY_ON_MAP < 50)
+								MAX_ENEMY_ON_MAP += 5;
+
 							return true;
 						}
 				}
@@ -290,7 +298,6 @@ void Game::respawnEntity(sf::Sprite * s, char entity = 'e')//p player, e enemy
 		
 		if (entity == 'p') {
 			if (!spriteCollision(s)) {
-				std::cout << "test";
 				if (!checkAllEnemyPosCollision(&player->getPlayerShape())) {
 					break;
 				}
