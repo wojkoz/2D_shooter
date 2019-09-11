@@ -18,9 +18,6 @@
     <ClCompile Include="Main.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>Pliki źródłowe</Filter>
-    </ClCompile>
     <ClCompile Include="Map\Map.cpp">
       <Filter>Pliki źródłowe</Filter>
     </ClCompile>
@@ -50,9 +47,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Game.h">
-      <Filter>Pliki nagłówkowe</Filter>
-    </ClInclude>
     <ClInclude Include="Map\Map.h">
       <Filter>Pliki nagłówkowe</Filter>
     </ClInclude>
@@ -83,8 +77,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Map\Map1.txt" />
-    <Text Include="arena.txt" />
-    <Text Include="mapa.txt" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="res\Font\PlayerName\data-latin.ttf" />

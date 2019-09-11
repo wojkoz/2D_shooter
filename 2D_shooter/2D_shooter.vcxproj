@@ -137,7 +137,6 @@
     <ClCompile Include="Network\PacketType.cpp" />
     <ClCompile Include="Player\Enemy.cpp" />
     <ClCompile Include="Player\Entity.cpp" />
-    <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Map\Map.cpp" />
     <ClCompile Include="Network\Network.cpp" />
@@ -150,14 +149,11 @@
     <ClInclude Include="Network\PacketType.h" />
     <ClInclude Include="Player\Enemy.h" />
     <ClInclude Include="Player\Entity.h" />
-    <ClInclude Include="Game.h" />
     <ClInclude Include="Map\Map.h" />
     <ClInclude Include="Network\Network.h" />
     <ClInclude Include="Player\Player.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="arena.txt" />
-    <Text Include="mapa.txt" />
     <Text Include="Map\Map1.txt" />
   </ItemGroup>
   <ItemGroup>
